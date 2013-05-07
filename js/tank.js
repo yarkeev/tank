@@ -4,14 +4,16 @@ var __hasProp = {}.hasOwnProperty,
 
 (function(window, $) {
   'use strict';
-  var Base, BulletModel, BulletView, CLASSES, DEAFAULT_BULLET_LENGTH, DEAFAULT_BULLET_SPEED, DEAFAULT_SPEED, DEBUG, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_WIDTH, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, Observer, Tank, TankModel, TankView, View;
-  DEAFAULT_SPEED = 20;
+  var Base, BulletModel, BulletView, CLASSES, DEAFAULT_BULLET_LENGTH, DEAFAULT_BULLET_SPEED, DEAFAULT_SPEED, DEBUG, DEFAULT_ANGLE_UPDATE_DELAY, DEFAULT_BULLET_EXPLODE_TIME, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_WIDTH, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, Observer, Tank, TankModel, TankView, View;
+  DEAFAULT_SPEED = 5;
   DEAFAULT_BULLET_SPEED = 300;
   DEAFAULT_BULLET_LENGTH = 400;
   DEFAULT_TANK_WIDTH = 75;
   DEFAULT_TANK_HEIGHT = 150;
   DEFAULT_BULLET_WIDTH = 16;
   DEFAULT_BULLET_HEIGHT = 16;
+  DEFAULT_BULLET_EXPLODE_TIME = 500;
+  DEFAULT_ANGLE_UPDATE_DELAY = 100;
   DEBUG = true;
   DOM_CONTAINER = null;
   CLASSES = {
@@ -108,6 +110,13 @@ var __hasProp = {}.hasOwnProperty,
       return this;
     };
 
+    /*
+    		# unsubscribe
+    		# @param {string} id event identifier
+    		# @param {function} callback
+    */
+
+
     Observer.prototype.off = function(id, callback) {
       var handler, handlers, key, _i, _len;
       id = $.trim(id);
@@ -137,15 +146,15 @@ var __hasProp = {}.hasOwnProperty,
 
 
     Observer.prototype.publish = function(id) {
-      var args, handler, handlers, _i, _len;
+      var args, handler, handlers, key;
       id = $.trim(id);
       if (id.length === 0) {
         this.error('incorrect id in Observer.publish');
       }
       handlers = this._subscribers[id];
       args = Array.prototype.slice.call(arguments, 1);
-      for (_i = 0, _len = handlers.length; _i < _len; _i++) {
-        handler = handlers[_i];
+      for (key in handlers) {
+        handler = handlers[key];
         if (handler != null) {
           handler.apply(this, args);
         }
@@ -184,7 +193,7 @@ var __hasProp = {}.hasOwnProperty,
       			# @var {string}
       */
 
-      this._directrion = 'top';
+      this._directrion = null;
       /*
       			# Speed of tank in pixel per iteration
       			# @var {number}
@@ -203,6 +212,24 @@ var __hasProp = {}.hasOwnProperty,
       */
 
       this.height = DEFAULT_TANK_HEIGHT;
+      /*
+      			# angle tank rotate
+      			# @var {number}
+      */
+
+      this._angle = 0;
+      /*
+      			# last time of update angle
+      			# @var {number}
+      */
+
+      this._lastUpdateAngle = (new Date()).getTime();
+      /*
+      			# delay of skip rotate
+      			# @var {number}
+      */
+
+      this._angleUpdateDelay = DEFAULT_ANGLE_UPDATE_DELAY;
     }
 
     /*
@@ -214,6 +241,8 @@ var __hasProp = {}.hasOwnProperty,
     TankModel.prototype.setDirection = function(direction) {
       if (this.availableDirections.indexOf(direction) !== -1) {
         this._directrion = direction;
+        clearTimeout(this._angleUpdateTimer);
+        this._angleUpdateTimer = setTimeout(this._updateAngle.bind(this), this._angleUpdateDelay);
         return this.publish('changeDirection', direction);
       } else {
         return this.error("unsupport direction " + direction);
@@ -227,7 +256,21 @@ var __hasProp = {}.hasOwnProperty,
 
 
     TankModel.prototype.getDirection = function() {
-      return this._directrion;
+      var angle;
+      angle = this.getAngle() % 360;
+      switch (angle) {
+        case 0:
+          return 'top';
+        case 90:
+        case -270:
+          return 'right';
+        case 180:
+        case -180:
+          return 'bottom';
+        case 270:
+        case -90:
+          return 'left';
+      }
     };
 
     /*
@@ -254,6 +297,31 @@ var __hasProp = {}.hasOwnProperty,
       return this._speed;
     };
 
+    /*
+    		# return angle tank rotate
+    		# @return {number}
+    */
+
+
+    TankModel.prototype.getAngle = function() {
+      return this._angle;
+    };
+
+    /*
+    		# update angle rotate
+    */
+
+
+    TankModel.prototype._updateAngle = function() {
+      if (this._directrion === 'left') {
+        this._angle -= 90;
+      }
+      if (this._directrion === 'right') {
+        this._angle += 90;
+      }
+      return this.publish('angleChange', this._angle);
+    };
+
     return TankModel;
 
   })(Observer);
@@ -278,6 +346,10 @@ var __hasProp = {}.hasOwnProperty,
     return View;
 
   })(Observer);
+  /*
+  	# model of bullet
+  */
+
   BulletModel = (function(_super) {
 
     __extends(BulletModel, _super);
@@ -290,9 +362,21 @@ var __hasProp = {}.hasOwnProperty,
       this.height = DEFAULT_BULLET_HEIGHT;
     }
 
+    /*
+    		# return speed of bullet
+    		# @return {number}
+    */
+
+
     BulletModel.prototype.getSpeed = function() {
       return this._speed;
     };
+
+    /*
+    		# return length of bullet
+    		# return {number}
+    */
+
 
     BulletModel.prototype.getLength = function() {
       return this._length;
@@ -311,6 +395,10 @@ var __hasProp = {}.hasOwnProperty,
 
     /*
     		# @constructor
+    		# @param {number} coord.left X coordinate of tank
+    		# @param {number} coord.top Y coordinate of tank
+    		# @param {BulletModel} model model of ballet
+    		# @param {TankModel} tankModel model of tank
     */
 
 
@@ -318,10 +406,19 @@ var __hasProp = {}.hasOwnProperty,
       BulletView.__super__.constructor.apply(this, arguments);
       this.model = model;
       this.tankModel = tankModel;
+      this._explodeTime = DEFAULT_BULLET_EXPLODE_TIME;
       this.$bullet = $("<div class='" + CLASSES.bullet.main + "'></div>").appendTo(this._$domContainer);
       this.setCoord(coord, this.tankModel.getDirection());
       this.move(this.tankModel.getDirection());
     }
+
+    /*
+    		# set start coordinate
+    		# @param {number} coord.left X coordinate of tank
+    		# @param {number} coord.top Y coordinate of tank
+    		# @param {string} direction current tank direction
+    */
+
 
     BulletView.prototype.setCoord = function(coord, direction) {
       switch (direction) {
@@ -342,6 +439,12 @@ var __hasProp = {}.hasOwnProperty,
       }
       return this.$bullet.css(coord);
     };
+
+    /*
+    		# move bullet
+    		# @param {string} direction
+    */
+
 
     BulletView.prototype.move = function(direction) {
       switch (direction) {
@@ -364,12 +467,17 @@ var __hasProp = {}.hasOwnProperty,
       }
     };
 
+    /*
+    		# explode
+    */
+
+
     BulletView.prototype.explode = function() {
       var _this = this;
       this.$bullet.addClass('explode');
       return setTimeout(function() {
         return _this.$bullet.remove();
-      }, 500);
+      }, this._explodeTime);
     };
 
     return BulletView;
@@ -406,68 +514,106 @@ var __hasProp = {}.hasOwnProperty,
       this.model = model;
       this.$tank = $("<div class='" + CLASSES.tank.main + "'></div>").appendTo(this._$domContainer);
       this.$tank.css(this.$tank.position());
+      this._pressed = {};
       this._bindEvents();
+      setInterval(this.update.bind(this), 10);
     }
 
     /*
-    		# set direction of tank
-    		# @param {string} direction
+    		# move tank
+    		# @param {string} directionX
     */
 
 
-    TankView.prototype.setDirection = function(direction) {
-      var angle;
-      switch (direction) {
-        case 'left':
-          angle = -90;
-          break;
+    TankView.prototype.move = function(directionX) {
+      var directionY, position, sign, speed;
+      speed = this.model.getSpeed();
+      directionY = this.model.getDirection();
+      position = {};
+      if (directionX === 'forward') {
+        sign = 1;
+      }
+      if (directionX === 'back') {
+        sign = -1;
+      }
+      switch (directionY) {
         case 'top':
-          angle = 0;
+          position.top = parseInt(this.$tank.css('top')) - sign * speed;
           break;
         case 'right':
-          angle = 90;
+          position.left = parseInt(this.$tank.css('left')) + sign * speed;
           break;
         case 'bottom':
-          angle = 180;
+          position.top = parseInt(this.$tank.css('top')) + sign * speed;
+          break;
+        case 'left':
+          position.left = parseInt(this.$tank.css('left')) - sign * speed;
       }
+      return this.$tank.css(position);
+    };
+
+    /*
+    		# shot (create bullet)
+    */
+
+
+    TankView.prototype.shot = function() {
+      var bulletModel, bulletView;
+      bulletModel = new BulletModel;
+      return bulletView = new BulletView(this.$tank.position(), bulletModel, this.model);
+    };
+
+    /*
+    		# rotate tank
+    		# @param {number} angle
+    */
+
+
+    TankView.prototype.rotate = function(angle) {
       return this.$tank.css({
         '-webkit-transform': "rotate(" + angle + "deg)"
       });
     };
 
     /*
-    		# move tank
-    		# @param {string} direction
+    		# update view
     */
 
 
-    TankView.prototype.move = function(direction) {
-      var speed;
-      speed = this.model.getSpeed();
-      switch (direction) {
-        case 'left':
-          return this.$tank.css({
-            left: parseInt(this.$tank.css('left')) - speed
-          });
-        case 'right':
-          return this.$tank.css({
-            left: parseInt(this.$tank.css('left')) + speed
-          });
-        case 'top':
-          return this.$tank.css({
-            top: parseInt(this.$tank.css('top')) - speed
-          });
-        case 'bottom':
-          return this.$tank.css({
-            top: parseInt(this.$tank.css('top')) + speed
-          });
+    TankView.prototype.update = function() {
+      var keyCode, value, _ref, _results;
+      _ref = this._pressed;
+      _results = [];
+      for (keyCode in _ref) {
+        value = _ref[keyCode];
+        switch (Number(keyCode)) {
+          case this.keyMap.left:
+            console.log('left');
+            _results.push(this.publish('leftKeyDown', event));
+            break;
+          case this.keyMap.right:
+            console.log('right');
+            _results.push(this.publish('rightKeyDown', event));
+            break;
+          case this.keyMap.top:
+            console.log('top');
+            this.move('forward');
+            _results.push(this.publish('topKeyDown', event));
+            break;
+          case this.keyMap.bottom:
+            console.log('bottom');
+            this.move('back');
+            _results.push(this.publish('bottomKeyDown', event));
+            break;
+          case this.keyMap.space:
+            this.shot();
+            _results.push(delete this._pressed[this.keyMap.space]);
+            break;
+          default:
+            _results.push(void 0);
+        }
       }
-    };
-
-    TankView.prototype.shot = function() {
-      var bulletModel, bulletView;
-      bulletModel = new BulletModel;
-      return bulletView = new BulletView(this.$tank.position(), bulletModel, this.model);
+      return _results;
     };
 
     /*
@@ -477,8 +623,12 @@ var __hasProp = {}.hasOwnProperty,
 
     TankView.prototype._bindEvents = function() {
       var _this = this;
-      return this._$domContainer.on('keydown', function(event) {
+      this._$domContainer.on('keydown', function(event) {
         _this._onKeyDown(event);
+        return event.preventDefault();
+      });
+      return this._$domContainer.on('keyup', function(event) {
+        _this._onKeyUp(event);
         return event.preventDefault();
       });
     };
@@ -490,22 +640,17 @@ var __hasProp = {}.hasOwnProperty,
 
 
     TankView.prototype._onKeyDown = function(event) {
-      switch (event.keyCode) {
-        case this.keyMap.left:
-          this.move('left');
-          return this.publish('leftKeyDown', event);
-        case this.keyMap.right:
-          this.move('right');
-          return this.publish('rightKeyDown', event);
-        case this.keyMap.top:
-          this.move('top');
-          return this.publish('topKeyDown', event);
-        case this.keyMap.bottom:
-          this.move('bottom');
-          return this.publish('bottomKeyDown', event);
-        case this.keyMap.space:
-          return this.shot();
-      }
+      return this._pressed[event.keyCode] = true;
+    };
+
+    /*
+    		# key up handler
+    		# @param {jQuery.Event} event jquery event object
+    */
+
+
+    TankView.prototype._onKeyUp = function(event) {
+      return delete this._pressed[event.keyCode];
     };
 
     return TankView;
@@ -525,6 +670,7 @@ var __hasProp = {}.hasOwnProperty,
 
 
     function Tank() {
+      Tank.__super__.constructor.apply(this, arguments);
       this.model = new TankModel();
       this.view = new TankView(this.model);
       this._bindEvents();
@@ -543,14 +689,8 @@ var __hasProp = {}.hasOwnProperty,
       this.view.on('rightKeyDown', function(event) {
         return _this.model.setDirection('right');
       });
-      this.view.on('topKeyDown', function(event) {
-        return _this.model.setDirection('top');
-      });
-      this.view.on('bottomKeyDown', function(event) {
-        return _this.model.setDirection('bottom');
-      });
-      return this.model.on('changeDirection', function(direction) {
-        return _this.view.setDirection(direction);
+      return this.model.on('angleChange', function(angle) {
+        return _this.view.rotate(angle);
       });
     };
 

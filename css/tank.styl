@@ -16,9 +16,9 @@ $bulletExplodeBackground = "/images/explode.gif"
 	background-image: url( $tankBackground )
 	background-size: cover
 	-webkit-transition: -webkit-transform $tankRotateTime, left $tankMoveTime, top $tankMoveTime
-	-moz-transition: -moz-transform $tankRotateTime
-	-o-transition: -o-transform $tankRotateTime
-	-ms-transition: -ms-transform $tankRotateTime
+	-moz-transition: -moz-transform $tankRotateTime, left $tankMoveTime, top $tankMoveTime
+	-o-transition: -o-transform $tankRotateTime, left $tankMoveTime, top $tankMoveTime
+	-ms-transition: -ms-transform $tankRotateTime, left $tankMoveTime, top $tankMoveTime
 
 .b-bullet
 	position: fixed

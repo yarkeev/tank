@@ -1,7 +1,7 @@
 ((window, $) ->
 	'use strict'
 
-	DEAFAULT_SPEED = 20
+	DEAFAULT_SPEED = 5
 
 	DEAFAULT_BULLET_SPEED = 300
 
@@ -14,6 +14,10 @@
 	DEFAULT_BULLET_WIDTH = 16
 
 	DEFAULT_BULLET_HEIGHT = 16
+
+	DEFAULT_BULLET_EXPLODE_TIME = 500
+
+	DEFAULT_ANGLE_UPDATE_DELAY = 100
 
 	DEBUG = true
 
@@ -82,6 +86,11 @@
 				@_subscribers[id] = [callback]
 			@
 
+		###
+		# unsubscribe
+		# @param {string} id event identifier
+		# @param {function} callback
+		###
 		off: (id, callback) ->
 			id = $.trim id
 			if id.length == 0
@@ -107,7 +116,7 @@
 				@error 'incorrect id in Observer.publish'
 			handlers = @_subscribers[id]
 			args = Array.prototype.slice.call arguments, 1 
-			for handler in handlers
+			for key, handler of handlers
 				handler?.apply @, args
 			@
 
@@ -132,7 +141,7 @@
 			# Current directrion
 			# @var {string}
 			###
-			@_directrion = 'top'
+			@_directrion = null
 
 			###
 			# Speed of tank in pixel per iteration
@@ -153,6 +162,24 @@
 			###
 			@height = DEFAULT_TANK_HEIGHT
 
+			###
+			# angle tank rotate
+			# @var {number}
+			###
+			@_angle = 0
+
+			###
+			# last time of update angle
+			# @var {number}
+			###
+			@_lastUpdateAngle = (new Date()).getTime()
+
+			###
+			# delay of skip rotate
+			# @var {number}
+			###
+			@_angleUpdateDelay = DEFAULT_ANGLE_UPDATE_DELAY
+
 		###
 		# Set direction of tank
 		# @param {string} direction
@@ -160,6 +187,8 @@
 		setDirection: (direction) ->
 			if @availableDirections.indexOf(direction) != -1
 				@_directrion = direction
+				clearTimeout @_angleUpdateTimer
+				@_angleUpdateTimer = setTimeout @_updateAngle.bind(@), @_angleUpdateDelay
 				@publish 'changeDirection', direction
 			else
 				@error "unsupport direction #{direction}"
@@ -169,7 +198,18 @@
 		# @return {string}
 		###
 		getDirection: ->
-			return @_directrion
+			angle = @getAngle() % 360
+
+			switch angle
+				when 0
+					'top'
+				when 90, -270
+					'right'
+				when 180, -180
+					'bottom'
+				when 270, -90
+					'left'
+
 
 		###
 		# Set speed of tank
@@ -186,8 +226,24 @@
 		# return {number}
 		###
 		getSpeed: ->
-			return @_speed
+			@_speed
 
+		###
+		# return angle tank rotate
+		# @return {number}
+		###
+		getAngle: ->
+			@_angle
+
+		###
+		# update angle rotate
+		###
+		_updateAngle: ->
+			if @_directrion == 'left'
+				@_angle -= 90
+			if @_directrion == 'right'
+				@_angle += 90
+			@publish 'angleChange', @_angle
 
 	###
 	# class of view
@@ -201,7 +257,9 @@
 			super
 			@_$domContainer = DOM_CONTAINER
 
-	
+	###
+	# model of bullet
+	###
 	class BulletModel extends Observer
 
 		constructor: ->
@@ -212,9 +270,17 @@
 			@width = DEFAULT_BULLET_WIDTH
 			@height = DEFAULT_BULLET_HEIGHT
 
+		###
+		# return speed of bullet
+		# @return {number}
+		###
 		getSpeed: ->
 			return @_speed
 
+		###
+		# return length of bullet
+		# return {number}
+		###
 		getLength: ->
 			return @_length
 
@@ -225,15 +291,26 @@
 
 		###
 		# @constructor
+		# @param {number} coord.left X coordinate of tank
+		# @param {number} coord.top Y coordinate of tank
+		# @param {BulletModel} model model of ballet
+		# @param {TankModel} tankModel model of tank 
 		###
 		constructor: (coord, model, tankModel) ->
 			super
 			@model = model
 			@tankModel = tankModel
+			@_explodeTime = DEFAULT_BULLET_EXPLODE_TIME
 			@$bullet = $("<div class='#{CLASSES.bullet.main}'></div>").appendTo @_$domContainer
 			@setCoord coord, @tankModel.getDirection()
 			@move @tankModel.getDirection()
 
+		###
+		# set start coordinate
+		# @param {number} coord.left X coordinate of tank
+		# @param {number} coord.top Y coordinate of tank
+		# @param {string} direction current tank direction
+		###
 		setCoord: (coord, direction) ->
 			switch direction
 				when 'left'
@@ -250,6 +327,10 @@
 
 			@$bullet.css coord
 
+		###
+		# move bullet
+		# @param {string} direction
+		###
 		move: (direction) ->
 			switch direction
 				when 'left'
@@ -269,11 +350,14 @@
 						top: "+=#{@model.getLength()}"
 					, @model.getSpeed(), 'linear', @explode.bind @
 
+		###
+		# explode
+		###
 		explode: ->
 			@$bullet.addClass 'explode'
 			setTimeout () =>
 				@$bullet.remove()
-			, 500
+			, @_explodeTime
 
 	###
 	# View of tank
@@ -301,50 +385,74 @@
 			@model = model
 			@$tank = $("<div class='#{CLASSES.tank.main}'></div>").appendTo @_$domContainer
 			@$tank.css @$tank.position()
+			@_pressed = {}
 			@_bindEvents()
 
-		###
-		# set direction of tank
-		# @param {string} direction
-		###
-		setDirection: (direction) ->
-			switch direction
-				when 'left'
-					angle = -90
-				when 'top'
-					angle = 0
-				when 'right'
-					angle = 90
-				when 'bottom'
-					angle = 180
-			@$tank.css
-				'-webkit-transform': "rotate(#{angle}deg)"
-
+			setInterval @update.bind(@), 10
 
 		###
 		# move tank
-		# @param {string} direction
+		# @param {string} directionX
 		###
-		move: (direction) ->
+		move: (directionX) ->
 			speed = @model.getSpeed()
+			directionY = @model.getDirection()
+			position = {}
+			if directionX == 'forward'
+				sign = 1
+			if directionX == 'back'
+				sign = -1
 
-			switch direction
-				when 'left'
-					@$tank.css
-						left: parseInt(@$tank.css 'left') - speed
-				when 'right'
-					@$tank.css
-						left: parseInt(@$tank.css 'left') + speed
+			switch directionY
 				when 'top'
-					@$tank.css
-						top: parseInt(@$tank.css 'top') - speed
+					position.top = parseInt(@$tank.css 'top') - sign * speed
+				when 'right'
+					position.left = parseInt(@$tank.css 'left') + sign * speed
 				when 'bottom'
-					@$tank.css
-						top: parseInt(@$tank.css 'top') + speed
+					position.top = parseInt(@$tank.css 'top') + sign * speed
+				when 'left'
+					position.left = parseInt(@$tank.css 'left') - sign * speed
 
+			@$tank.css position
+
+		###
+		# shot (create bullet)
+		###
 		shot: ->
 			bulletModel = new BulletModel
 			bulletView = new BulletView @$tank.position(), bulletModel, @model
+
+		###
+		# rotate tank
+		# @param {number} angle
+		###
+		rotate: (angle) ->
+			@$tank.css
+				'-webkit-transform': "rotate(#{angle}deg)"
+
+		###
+		# update view
+		###
+		update: ->
+			for keyCode, value of @_pressed
+				switch Number(keyCode)
+					when @keyMap.left
+						console.log 'left'
+						@publish 'leftKeyDown', event
+					when @keyMap.right
+						console.log 'right'
+						@publish 'rightKeyDown', event
+					when @keyMap.top
+						console.log 'top'
+						@move 'forward'
+						@publish 'topKeyDown', event
+					when @keyMap.bottom
+						console.log 'bottom'
+						@move 'back'
+						@publish 'bottomKeyDown', event
+					when @keyMap.space
+						@shot()
+						delete @_pressed[@keyMap.space]
 
 		###
 		# bind dom events
@@ -354,26 +462,23 @@
 				@_onKeyDown event
 				event.preventDefault()
 
+			@_$domContainer.on 'keyup', (event) =>
+				@_onKeyUp event
+				event.preventDefault()
+
 		###
 		# key down handler
 		# @param {jQuery.Event} event jquery event object
 		###
 		_onKeyDown: (event) ->
-			switch event.keyCode
-				when @keyMap.left
-					@move 'left'
-					@publish 'leftKeyDown', event
-				when @keyMap.right
-					@move 'right'
-					@publish 'rightKeyDown', event
-				when @keyMap.top
-					@move 'top'
-					@publish 'topKeyDown', event
-				when @keyMap.bottom
-					@move 'bottom'
-					@publish 'bottomKeyDown', event
-				when @keyMap.space
-					@shot()
+			@_pressed[event.keyCode] = true
+
+		###
+		# key up handler
+		# @param {jQuery.Event} event jquery event object
+		###
+		_onKeyUp: (event) ->
+			delete @_pressed[event.keyCode]
 
 	###
 	# class of tank
@@ -384,6 +489,8 @@
 		# @constructor
 		###
 		constructor: ->
+			super
+
 			@model = new TankModel()
 			@view = new TankView @model
 
@@ -397,13 +504,9 @@
 				@model.setDirection 'left'
 			@view.on 'rightKeyDown', (event) =>
 				@model.setDirection 'right'
-			@view.on 'topKeyDown', (event) =>
-				@model.setDirection 'top'
-			@view.on 'bottomKeyDown', (event) =>
-				@model.setDirection 'bottom'
 
-			@model.on 'changeDirection', (direction) =>
-				@view.setDirection direction
+			@model.on 'angleChange', (angle) =>
+				@view.rotate angle
 
 
 	$ () ->
