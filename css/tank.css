@@ -1,0 +1,28 @@
+.b-tank {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 75px;
+  height: 150px;
+  margin: -75px 0 -37.5px;
+  background-image: url("/images/t34.jpg");
+  background-size: cover;
+  -webkit-transition: -webkit-transform 0.5s, left 0.1s, top 0.1s;
+  -moz-transition: -moz-transform 0.5s;
+  -o-transition: -o-transform 0.5s;
+  -ms-transition: -ms-transform 0.5s;
+}
+.b-bullet {
+  position: fixed;
+  width: 16px;
+  height: 16px;
+  background-color: #000;
+  border-radius: 16px;
+}
+.b-bullet.explode {
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  background-image: url("/images/explode.gif");
+  background-size: cover;
+}

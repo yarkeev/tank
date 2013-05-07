@@ -1,0 +1,35 @@
+$tankWidth = 75px
+$tankHeight = 150px
+$tankBackground = "/images/t34.jpg"
+$tankRotateTime = .5s
+$tankMoveTime = .1s
+
+$bulletExplodeBackground = "/images/explode.gif"
+
+.b-tank
+	position: fixed
+	top: 50%
+	left: 50%
+	width: $tankWidth
+	height: $tankHeight
+	margin: -($tankHeight/2) 0 0 -($tankWidth/2)
+	background-image: url( $tankBackground )
+	background-size: cover
+	-webkit-transition: -webkit-transform $tankRotateTime, left $tankMoveTime, top $tankMoveTime
+	-moz-transition: -moz-transform $tankRotateTime
+	-o-transition: -o-transform $tankRotateTime
+	-ms-transition: -ms-transform $tankRotateTime
+
+.b-bullet
+	position: fixed
+	width: 16px
+	height: 16px
+	background-color: #000
+	border-radius: 16px
+
+	&.explode
+		width: 50px
+		height: 50px
+		background-color: transparent
+		background-image: url( $bulletExplodeBackground )
+		background-size: cover
