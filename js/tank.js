@@ -510,7 +510,7 @@ var __hasProp = {}.hasOwnProperty,
       this.$tank.css(this.$tank.position());
       this._pressed = {};
       this._bindEvents();
-      setInterval(this.update.bind(this), 50);
+      setInterval(this.update.bind(this), 0);
     }
 
     /*

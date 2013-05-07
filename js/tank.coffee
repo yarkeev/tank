@@ -381,7 +381,7 @@
 			@_pressed = {}
 			@_bindEvents()
 
-			setInterval @update.bind(@), 50
+			setInterval @update.bind(@), 0
 
 		###
 		# move tank
