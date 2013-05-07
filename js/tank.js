@@ -219,12 +219,6 @@ var __hasProp = {}.hasOwnProperty,
 
       this._angle = 0;
       /*
-      			# last time of update angle
-      			# @var {number}
-      */
-
-      this._lastUpdateAngle = (new Date()).getTime();
-      /*
       			# delay of skip rotate
       			# @var {number}
       */
@@ -516,7 +510,7 @@ var __hasProp = {}.hasOwnProperty,
       this.$tank.css(this.$tank.position());
       this._pressed = {};
       this._bindEvents();
-      setInterval(this.update.bind(this), 10);
+      setInterval(this.update.bind(this), 50);
     }
 
     /*

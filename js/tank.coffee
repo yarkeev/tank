@@ -155,7 +155,6 @@
 			###
 			@width = DEFAULT_TANK_WIDTH
 
-
 			###
 			# height
 			# @var {number}
@@ -167,12 +166,6 @@
 			# @var {number}
 			###
 			@_angle = 0
-
-			###
-			# last time of update angle
-			# @var {number}
-			###
-			@_lastUpdateAngle = (new Date()).getTime()
 
 			###
 			# delay of skip rotate
@@ -388,7 +381,7 @@
 			@_pressed = {}
 			@_bindEvents()
 
-			setInterval @update.bind(@), 10
+			setInterval @update.bind(@), 50
 
 		###
 		# move tank
