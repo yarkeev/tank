@@ -730,7 +730,7 @@ var __hasProp = {}.hasOwnProperty,
     $style = $('<style></style>').appendTo($('head'));
     $style.html('\
 		.b-tank{\
-				z-index: 100;\
+				z-index: 1000;\
 				position:fixed;\
 				top:50%;\
 				left:50%;\
@@ -751,7 +751,7 @@ var __hasProp = {}.hasOwnProperty,
 		}\
 		\
 		.b-bullet{\
-			z-index:99;\
+			z-index:999;\
 			position:fixed;\
 			width:2px;\
 			height:9px;\
