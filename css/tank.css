@@ -7,15 +7,11 @@
   margin: -75px 0 -37.5px;
   background-image: url("/images/t34.jpg");
   background-size: cover;
-  -webkit-transition: -webkit-transform 0.5s, left 0.1s, top 0.1s;
-  -moz-transition: -moz-transform 0.5s, left 0.1s, top 0.1s;
-  -o-transition: -o-transform 0.5s, left 0.1s, top 0.1s;
-  -ms-transition: -ms-transform 0.5s, left 0.1s, top 0.1s;
 }
 .b-bullet {
   position: fixed;
-  width: 16px;
-  height: 16px;
+  width: 8px;
+  height: 8px;
   background-color: #000;
   border-radius: 16px;
 }

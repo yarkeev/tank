@@ -4,10 +4,11 @@ var __hasProp = {}.hasOwnProperty,
 
 (function(window, $) {
   'use strict';
-  var Base, BulletModel, BulletView, CLASSES, DEAFAULT_BULLET_LENGTH, DEAFAULT_BULLET_SPEED, DEAFAULT_SPEED, DEBUG, DEFAULT_ANGLE_UPDATE_DELAY, DEFAULT_BULLET_EXPLODE_TIME, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_WIDTH, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, Observer, Tank, TankModel, TankView, View;
-  DEAFAULT_SPEED = 5;
-  DEAFAULT_BULLET_SPEED = 300;
-  DEAFAULT_BULLET_LENGTH = 400;
+  var Base, BulletModel, BulletView, CLASSES, DEBUG, DEFAULT_ANGLE_SPEED, DEFAULT_ANGLE_UPDATE_DELAY, DEFAULT_BULLET_EXPLODE_TIME, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_LENGTH, DEFAULT_BULLET_SPEED, DEFAULT_BULLET_WIDTH, DEFAULT_SPEED, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, Observer, Tank, TankModel, TankView, View, requestAnimFrame;
+  DEFAULT_SPEED = 5;
+  DEFAULT_ANGLE_SPEED = 2;
+  DEFAULT_BULLET_SPEED = 300;
+  DEFAULT_BULLET_LENGTH = 300;
   DEFAULT_TANK_WIDTH = 75;
   DEFAULT_TANK_HEIGHT = 150;
   DEFAULT_BULLET_WIDTH = 16;
@@ -24,6 +25,40 @@ var __hasProp = {}.hasOwnProperty,
       main: 'b-bullet'
     }
   };
+  /*
+  	# function loop for animations
+  */
+
+  requestAnimFrame = (function() {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback, element) {
+      return window.setTimeout(callback, 1000 / 60);
+    };
+  })();
+  
+	if (!Function.prototype.bind) {
+	  Function.prototype.bind = function (oThis) {
+	    if (typeof this !== "function") {
+	      // closest thing possible to the ECMAScript 5 internal IsCallable function
+	      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+	    }
+	 
+	    var aArgs = Array.prototype.slice.call(arguments, 1), 
+	        fToBind = this, 
+	        fNOP = function () {},
+	        fBound = function () {
+	          return fToBind.apply(this instanceof fNOP && oThis
+	                                 ? this
+	                                 : oThis,
+	                               aArgs.concat(Array.prototype.slice.call(arguments)));
+	        };
+	 
+	    fNOP.prototype = this.prototype;
+	    fBound.prototype = new fNOP();
+	 
+	    return fBound;
+	  };
+	}
+    ;
   /*
   	# Base class for all tank classes
   */
@@ -174,14 +209,6 @@ var __hasProp = {}.hasOwnProperty,
     __extends(TankModel, _super);
 
     /*
-    		# available values of property direction
-    		# @param {array}
-    */
-
-
-    TankModel.prototype.availableDirections = ['top', 'right', 'bottom', 'left'];
-
-    /*
     		# @constructor
     */
 
@@ -199,7 +226,13 @@ var __hasProp = {}.hasOwnProperty,
       			# @var {number}
       */
 
-      this._speed = DEAFAULT_SPEED;
+      this._speed = DEFAULT_SPEED;
+      /*
+      			# Angle speed of tank in degrees per iteration
+      			# @var {number}
+      */
+
+      this._angleSpeed = DEFAULT_ANGLE_SPEED;
       /*
       			# width
       			# @var {number}
@@ -232,39 +265,13 @@ var __hasProp = {}.hasOwnProperty,
     */
 
 
-    TankModel.prototype.setDirection = function(direction) {
-      if (this.availableDirections.indexOf(direction) !== -1) {
-        this._directrion = direction;
-        clearTimeout(this._angleUpdateTimer);
-        this._angleUpdateTimer = setTimeout(this._updateAngle.bind(this), this._angleUpdateDelay);
-        return this.publish('changeDirection', direction);
-      } else {
-        return this.error("unsupport direction " + direction);
+    TankModel.prototype.rotate = function(direction) {
+      if (direction === 'left') {
+        this._angle -= this._angleSpeed;
+      } else if (direction === 'right') {
+        this._angle += this._angleSpeed;
       }
-    };
-
-    /*
-    		# return direction of tank
-    		# @return {string}
-    */
-
-
-    TankModel.prototype.getDirection = function() {
-      var angle;
-      angle = this.getAngle() % 360;
-      switch (angle) {
-        case 0:
-          return 'top';
-        case 90:
-        case -270:
-          return 'right';
-        case 180:
-        case -180:
-          return 'bottom';
-        case 270:
-        case -90:
-          return 'left';
-      }
+      return this.publish('angleChange', this._angle);
     };
 
     /*
@@ -298,7 +305,7 @@ var __hasProp = {}.hasOwnProperty,
 
 
     TankModel.prototype.getAngle = function() {
-      return this._angle;
+      return (this._angle + 90) * Math.PI / 180;
     };
 
     /*
@@ -307,13 +314,14 @@ var __hasProp = {}.hasOwnProperty,
 
 
     TankModel.prototype._updateAngle = function() {
-      if (this._directrion === 'left') {
-        this._angle -= 90;
-      }
-      if (this._directrion === 'right') {
-        this._angle += 90;
-      }
-      return this.publish('angleChange', this._angle);
+      /*
+      			if @_directrion == 'left'
+      				@_angle -= 90
+      			if @_directrion == 'right'
+      				@_angle += 90
+      			@publish 'angleChange', @_angle
+      */
+
     };
 
     return TankModel;
@@ -350,8 +358,8 @@ var __hasProp = {}.hasOwnProperty,
 
     function BulletModel() {
       BulletModel.__super__.constructor.apply(this, arguments);
-      this._speed = DEAFAULT_BULLET_SPEED;
-      this._length = DEAFAULT_BULLET_LENGTH;
+      this._speed = DEFAULT_BULLET_SPEED;
+      this._length = DEFAULT_BULLET_LENGTH;
       this.width = DEFAULT_BULLET_WIDTH;
       this.height = DEFAULT_BULLET_HEIGHT;
     }
@@ -402,8 +410,8 @@ var __hasProp = {}.hasOwnProperty,
       this.tankModel = tankModel;
       this._explodeTime = DEFAULT_BULLET_EXPLODE_TIME;
       this.$bullet = $("<div class='" + CLASSES.bullet.main + "'></div>").appendTo(this._$domContainer);
-      this.setCoord(coord, this.tankModel.getDirection());
-      this.move(this.tankModel.getDirection());
+      this.setCoord(coord);
+      this.move(this.tankModel.getAngle());
     }
 
     /*
@@ -415,50 +423,37 @@ var __hasProp = {}.hasOwnProperty,
 
 
     BulletView.prototype.setCoord = function(coord, direction) {
-      switch (direction) {
-        case 'left':
-          coord.top -= this.tankModel.width / 2 + this.model.height / 2;
-          break;
-        case 'right':
-          coord.top -= this.tankModel.width / 2 + this.model.height / 2;
-          coord.left += this.tankModel.height;
-          break;
-        case 'top':
-          coord.left += this.tankModel.width / 2 - this.model.width / 2;
-          coord.top -= this.tankModel.height / 2;
-          break;
-        case 'bottom':
-          coord.left += this.tankModel.width / 2 - this.model.width / 2;
-          coord.top += this.tankModel.height / 2 - this.model.height / 2;
-      }
-      return this.$bullet.css(coord);
+      var angle, height, width;
+      angle = this.tankModel.getAngle();
+      width = this.tankModel.width;
+      height = this.tankModel.height;
+      this.position = {
+        left: coord.left + (width / 2) + (height / 2) * Math.cos(angle + Math.PI),
+        top: coord.top + (height / 2) * Math.sin(angle + Math.PI)
+      };
+      return this.$bullet.css(this.position);
     };
 
     /*
     		# move bullet
-    		# @param {string} direction
+    		# @param {number} angle
     */
 
 
-    BulletView.prototype.move = function(direction) {
-      switch (direction) {
-        case 'left':
-          return this.$bullet.animate({
-            left: "-=" + (this.model.getLength())
-          }, this.model.getSpeed(), 'linear', this.explode.bind(this));
-        case 'right':
-          return this.$bullet.animate({
-            left: "+=" + (this.model.getLength())
-          }, this.model.getSpeed(), 'linear', this.explode.bind(this));
-        case 'top':
-          return this.$bullet.animate({
-            top: "-=" + (this.model.getLength())
-          }, this.model.getSpeed(), 'linear', this.explode.bind(this));
-        case 'bottom':
-          return this.$bullet.animate({
-            top: "+=" + (this.model.getLength())
-          }, this.model.getSpeed(), 'linear', this.explode.bind(this));
-      }
+    BulletView.prototype.move = function(angle) {
+      var length,
+        _this = this;
+      length = this.model.getLength();
+      this.position = {
+        left: this.position.left + length * Math.cos(angle + Math.PI),
+        top: this.position.top + length * Math.sin(angle + Math.PI)
+      };
+      return this.$bullet.animate(this.position, this.model.getSpeed(), 'linear', function() {
+        _this.$bullet.addClass('explode');
+        return setTimeout(function() {
+          return _this.$bullet.remove();
+        }, 500);
+      });
     };
 
     /*
@@ -508,9 +503,10 @@ var __hasProp = {}.hasOwnProperty,
       this.model = model;
       this.$tank = $("<div class='" + CLASSES.tank.main + "'></div>").appendTo(this._$domContainer);
       this.$tank.css(this.$tank.position());
+      this.position = this.$tank.position();
       this._pressed = {};
       this._bindEvents();
-      setInterval(this.update.bind(this), 0);
+      this.update();
     }
 
     /*
@@ -519,31 +515,21 @@ var __hasProp = {}.hasOwnProperty,
     */
 
 
-    TankView.prototype.move = function(directionX) {
-      var directionY, position, sign, speed;
+    TankView.prototype.move = function(direction) {
+      var angle, sign, speed;
       speed = this.model.getSpeed();
-      directionY = this.model.getDirection();
-      position = {};
-      if (directionX === 'forward') {
-        sign = 1;
-      }
-      if (directionX === 'back') {
+      angle = this.model.getAngle();
+      if (direction === 'forward') {
         sign = -1;
       }
-      switch (directionY) {
-        case 'top':
-          position.top = parseInt(this.$tank.css('top')) - sign * speed;
-          break;
-        case 'right':
-          position.left = parseInt(this.$tank.css('left')) + sign * speed;
-          break;
-        case 'bottom':
-          position.top = parseInt(this.$tank.css('top')) + sign * speed;
-          break;
-        case 'left':
-          position.left = parseInt(this.$tank.css('left')) - sign * speed;
+      if (direction === 'back') {
+        sign = 1;
       }
-      return this.$tank.css(position);
+      this.position = {
+        left: this.position.left + sign * speed * Math.cos(angle),
+        top: this.position.top + sign * speed * Math.sin(angle)
+      };
+      return this.$tank.css(this.position);
     };
 
     /*
@@ -554,7 +540,10 @@ var __hasProp = {}.hasOwnProperty,
     TankView.prototype.shot = function() {
       var bulletModel, bulletView;
       bulletModel = new BulletModel;
-      return bulletView = new BulletView(this.$tank.position(), bulletModel, this.model);
+      return bulletView = new BulletView({
+        left: parseInt(this.$tank.css('left')),
+        top: parseInt(this.$tank.css('top'))
+      }, bulletModel, this.model);
     };
 
     /*
@@ -564,9 +553,23 @@ var __hasProp = {}.hasOwnProperty,
 
 
     TankView.prototype.rotate = function(angle) {
-      return this.$tank.css({
-        '-webkit-transform': "rotate(" + angle + "deg)"
-      });
+      var cos, sin;
+      if (!$.browser.msie) {
+        return this.$tank.css({
+          '-webkit-transform': "rotate(" + angle + "deg)",
+          '-moz-transform': "rotate(" + angle + "deg)",
+          '-o-transform': "rotate(" + angle + "deg)",
+          '-ms-transform': "rotate(" + angle + "deg)",
+          'transform': "rotate(" + angle + "deg)"
+        });
+      } else {
+        cos = Math.cos(angle);
+        sin = Math.sin(angle);
+        return this.$tank.css({
+          filter: 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')',
+          '-ms-filter': 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')'
+        });
+      }
     };
 
     /*
@@ -575,39 +578,31 @@ var __hasProp = {}.hasOwnProperty,
 
 
     TankView.prototype.update = function() {
-      var keyCode, value, _ref, _results;
+      var keyCode, value, _ref;
       _ref = this._pressed;
-      _results = [];
       for (keyCode in _ref) {
         value = _ref[keyCode];
         switch (Number(keyCode)) {
           case this.keyMap.left:
-            console.log('left');
-            _results.push(this.publish('leftKeyDown', event));
+            this.publish('leftKeyDown');
             break;
           case this.keyMap.right:
-            console.log('right');
-            _results.push(this.publish('rightKeyDown', event));
+            this.publish('rightKeyDown');
             break;
           case this.keyMap.top:
-            console.log('top');
             this.move('forward');
-            _results.push(this.publish('topKeyDown', event));
+            this.publish('topKeyDown');
             break;
           case this.keyMap.bottom:
-            console.log('bottom');
             this.move('back');
-            _results.push(this.publish('bottomKeyDown', event));
+            this.publish('bottomKeyDown');
             break;
           case this.keyMap.space:
             this.shot();
-            _results.push(delete this._pressed[this.keyMap.space]);
-            break;
-          default:
-            _results.push(void 0);
+            delete this._pressed[this.keyMap.space];
         }
       }
-      return _results;
+      return requestAnimFrame(this.update.bind(this), this.$tank);
     };
 
     /*
@@ -678,10 +673,10 @@ var __hasProp = {}.hasOwnProperty,
     Tank.prototype._bindEvents = function() {
       var _this = this;
       this.view.on('leftKeyDown', function(event) {
-        return _this.model.setDirection('left');
+        return _this.model.rotate('left');
       });
       this.view.on('rightKeyDown', function(event) {
-        return _this.model.setDirection('right');
+        return _this.model.rotate('right');
       });
       return this.model.on('angleChange', function(angle) {
         return _this.view.rotate(angle);

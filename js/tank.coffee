@@ -1,11 +1,13 @@
 ((window, $) ->
 	'use strict'
 
-	DEAFAULT_SPEED = 5
+	DEFAULT_SPEED = 5
 
-	DEAFAULT_BULLET_SPEED = 300
+	DEFAULT_ANGLE_SPEED = 2
 
-	DEAFAULT_BULLET_LENGTH = 400
+	DEFAULT_BULLET_SPEED = 300
+
+	DEFAULT_BULLET_LENGTH = 300
 
 	DEFAULT_TANK_WIDTH = 75
 
@@ -28,6 +30,45 @@
 			main: 'b-tank'
 		bullet:
 			main: 'b-bullet'
+
+	###
+	# function loop for animations 
+	###
+	requestAnimFrame = (() ->
+      return  window.requestAnimationFrame       || 
+              window.webkitRequestAnimationFrame || 
+              window.mozRequestAnimationFrame    || 
+              window.oRequestAnimationFrame      || 
+              window.msRequestAnimationFrame     || 
+              (callback, element) ->
+                window.setTimeout callback, (1000 / 60)
+    )()
+
+    `
+	if (!Function.prototype.bind) {
+	  Function.prototype.bind = function (oThis) {
+	    if (typeof this !== "function") {
+	      // closest thing possible to the ECMAScript 5 internal IsCallable function
+	      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+	    }
+	 
+	    var aArgs = Array.prototype.slice.call(arguments, 1), 
+	        fToBind = this, 
+	        fNOP = function () {},
+	        fBound = function () {
+	          return fToBind.apply(this instanceof fNOP && oThis
+	                                 ? this
+	                                 : oThis,
+	                               aArgs.concat(Array.prototype.slice.call(arguments)));
+	        };
+	 
+	    fNOP.prototype = this.prototype;
+	    fBound.prototype = new fNOP();
+	 
+	    return fBound;
+	  };
+	}
+    `
 
 	###
 	# Base class for all tank classes
@@ -126,12 +167,6 @@
 	class TankModel extends Observer
 
 		###
-		# available values of property direction
-		# @param {array}
-		###
-		availableDirections: ['top', 'right', 'bottom', 'left']
-
-		###
 		# @constructor
 		###
 		constructor: ->
@@ -147,7 +182,13 @@
 			# Speed of tank in pixel per iteration
 			# @var {number}
 			###
-			@_speed = DEAFAULT_SPEED
+			@_speed = DEFAULT_SPEED
+
+			###
+			# Angle speed of tank in degrees per iteration
+			# @var {number}
+			###
+			@_angleSpeed = DEFAULT_ANGLE_SPEED
 
 			###
 			# width
@@ -177,31 +218,12 @@
 		# Set direction of tank
 		# @param {string} direction
 		###
-		setDirection: (direction) ->
-			if @availableDirections.indexOf(direction) != -1
-				@_directrion = direction
-				clearTimeout @_angleUpdateTimer
-				@_angleUpdateTimer = setTimeout @_updateAngle.bind(@), @_angleUpdateDelay
-				@publish 'changeDirection', direction
-			else
-				@error "unsupport direction #{direction}"
-
-		###
-		# return direction of tank
-		# @return {string}
-		###
-		getDirection: ->
-			angle = @getAngle() % 360
-
-			switch angle
-				when 0
-					'top'
-				when 90, -270
-					'right'
-				when 180, -180
-					'bottom'
-				when 270, -90
-					'left'
+		rotate: (direction) ->
+			if direction == 'left'
+				@_angle -= @_angleSpeed
+			else if direction == 'right'
+				@_angle += @_angleSpeed
+			@publish 'angleChange', @_angle
 
 
 		###
@@ -226,17 +248,19 @@
 		# @return {number}
 		###
 		getAngle: ->
-			@_angle
+			(@_angle + 90) * Math.PI / 180
 
 		###
 		# update angle rotate
 		###
 		_updateAngle: ->
+			###
 			if @_directrion == 'left'
 				@_angle -= 90
 			if @_directrion == 'right'
 				@_angle += 90
 			@publish 'angleChange', @_angle
+			###
 
 	###
 	# class of view
@@ -258,8 +282,8 @@
 		constructor: ->
 			super
 
-			@_speed = DEAFAULT_BULLET_SPEED
-			@_length = DEAFAULT_BULLET_LENGTH
+			@_speed = DEFAULT_BULLET_SPEED
+			@_length = DEFAULT_BULLET_LENGTH
 			@width = DEFAULT_BULLET_WIDTH
 			@height = DEFAULT_BULLET_HEIGHT
 
@@ -295,8 +319,8 @@
 			@tankModel = tankModel
 			@_explodeTime = DEFAULT_BULLET_EXPLODE_TIME
 			@$bullet = $("<div class='#{CLASSES.bullet.main}'></div>").appendTo @_$domContainer
-			@setCoord coord, @tankModel.getDirection()
-			@move @tankModel.getDirection()
+			@setCoord coord
+			@move @tankModel.getAngle()
 
 		###
 		# set start coordinate
@@ -305,43 +329,29 @@
 		# @param {string} direction current tank direction
 		###
 		setCoord: (coord, direction) ->
-			switch direction
-				when 'left'
-					coord.top -= (@tankModel.width / 2 + @model.height / 2)
-				when 'right'
-					coord.top -= (@tankModel.width / 2 + @model.height / 2)
-					coord.left += @tankModel.height
-				when 'top'
-					coord.left += (@tankModel.width / 2 - @model.width / 2)
-					coord.top -= @tankModel.height / 2
-				when 'bottom'
-					coord.left += (@tankModel.width / 2 - @model.width / 2)
-					coord.top += (@tankModel.height / 2 - @model.height / 2)
+			angle = @tankModel.getAngle()
+			width = @tankModel.width
+			height = @tankModel.height
 
-			@$bullet.css coord
+			@position =
+				left: coord.left + (width / 2) + (height / 2) * Math.cos(angle + Math.PI)
+				top: coord.top + (height / 2) * Math.sin(angle + Math.PI)
+			@$bullet.css @position
 
 		###
 		# move bullet
-		# @param {string} direction
+		# @param {number} angle
 		###
-		move: (direction) ->
-			switch direction
-				when 'left'
-					@$bullet.animate
-						left: "-=#{@model.getLength()}"
-					, @model.getSpeed(), 'linear', @explode.bind @
-				when 'right'
-					@$bullet.animate
-						left: "+=#{@model.getLength()}"
-					, @model.getSpeed(), 'linear', @explode.bind @
-				when 'top'
-					@$bullet.animate
-						top: "-=#{@model.getLength()}"
-					, @model.getSpeed(), 'linear', @explode.bind @
-				when 'bottom'
-					@$bullet.animate
-						top: "+=#{@model.getLength()}"
-					, @model.getSpeed(), 'linear', @explode.bind @
+		move: (angle) ->
+			length = @model.getLength()
+			@position = 
+				left: @position.left + length * Math.cos(angle + Math.PI)
+				top: @position.top + length * Math.sin(angle + Math.PI)
+			@$bullet.animate @position, @model.getSpeed(), 'linear', () =>
+				@$bullet.addClass 'explode'
+				setTimeout () =>
+					@$bullet.remove()
+				, 500
 
 		###
 		# explode
@@ -378,50 +388,59 @@
 			@model = model
 			@$tank = $("<div class='#{CLASSES.tank.main}'></div>").appendTo @_$domContainer
 			@$tank.css @$tank.position()
+			@position = @$tank.position()
 			@_pressed = {}
 			@_bindEvents()
 
-			setInterval @update.bind(@), 0
+			@update()
 
 		###
 		# move tank
 		# @param {string} directionX
 		###
-		move: (directionX) ->
+		move: (direction) ->
 			speed = @model.getSpeed()
-			directionY = @model.getDirection()
-			position = {}
-			if directionX == 'forward'
-				sign = 1
-			if directionX == 'back'
+			angle = @model.getAngle()
+
+			if direction == 'forward'
 				sign = -1
+			if direction == 'back'
+				sign = 1
 
-			switch directionY
-				when 'top'
-					position.top = parseInt(@$tank.css 'top') - sign * speed
-				when 'right'
-					position.left = parseInt(@$tank.css 'left') + sign * speed
-				when 'bottom'
-					position.top = parseInt(@$tank.css 'top') + sign * speed
-				when 'left'
-					position.left = parseInt(@$tank.css 'left') - sign * speed
+			@position =
+				left: @position.left + sign * speed * Math.cos angle
+				top: @position.top + sign * speed * Math.sin angle
 
-			@$tank.css position
+			@$tank.css @position
 
 		###
 		# shot (create bullet)
 		###
 		shot: ->
 			bulletModel = new BulletModel
-			bulletView = new BulletView @$tank.position(), bulletModel, @model
+			bulletView = new BulletView
+				left: parseInt(@$tank.css('left'))
+				top: parseInt(@$tank.css('top'))
+			, bulletModel, @model
 
 		###
 		# rotate tank
 		# @param {number} angle
 		###
 		rotate: (angle) ->
-			@$tank.css
-				'-webkit-transform': "rotate(#{angle}deg)"
+			if !$.browser.msie
+				@$tank.css
+					'-webkit-transform': "rotate(#{angle}deg)"
+					'-moz-transform': "rotate(#{angle}deg)"
+					'-o-transform': "rotate(#{angle}deg)"
+					'-ms-transform': "rotate(#{angle}deg)"
+					'transform': "rotate(#{angle}deg)"
+			else
+				cos = Math.cos angle
+				sin = Math.sin angle
+				@$tank.css
+					filter: 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')'
+					'-ms-filter': 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')'
 
 		###
 		# update view
@@ -430,22 +449,19 @@
 			for keyCode, value of @_pressed
 				switch Number(keyCode)
 					when @keyMap.left
-						console.log 'left'
-						@publish 'leftKeyDown', event
+						@publish 'leftKeyDown'
 					when @keyMap.right
-						console.log 'right'
-						@publish 'rightKeyDown', event
+						@publish 'rightKeyDown'
 					when @keyMap.top
-						console.log 'top'
 						@move 'forward'
-						@publish 'topKeyDown', event
+						@publish 'topKeyDown'
 					when @keyMap.bottom
-						console.log 'bottom'
 						@move 'back'
-						@publish 'bottomKeyDown', event
+						@publish 'bottomKeyDown'
 					when @keyMap.space
 						@shot()
 						delete @_pressed[@keyMap.space]
+			requestAnimFrame @update.bind(@), @$tank
 
 		###
 		# bind dom events
@@ -494,9 +510,9 @@
 		###
 		_bindEvents: ->
 			@view.on 'leftKeyDown', (event) =>
-				@model.setDirection 'left'
+				@model.rotate 'left'
 			@view.on 'rightKeyDown', (event) =>
-				@model.setDirection 'right'
+				@model.rotate 'right'
 
 			@model.on 'angleChange', (angle) =>
 				@view.rotate angle
