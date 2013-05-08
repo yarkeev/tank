@@ -760,7 +760,7 @@ var __hasProp = {}.hasOwnProperty,
 \
 		@-webkit-keyframes bulletAnimation {\
 			from { background-position: 0 0; }\
-			to { background-position: 480px 0; }\
+			to { background-position: 432px 0; }\
 		}\
 			');
     return new Tank();
