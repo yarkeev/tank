@@ -333,6 +333,15 @@
 			@tankModel = tankModel
 			@_explodeTime = DEFAULT_BULLET_EXPLODE_TIME
 			@$bullet = $("<div class='#{CLASSES.bullet.main}'></div>").appendTo @_$domContainer
+			
+			angle = (@tankModel.getAngle() * 180 / Math.PI) - 90
+			@$bullet.css
+					'-webkit-transform': "rotate(#{angle}deg)"
+					'-moz-transform': "rotate(#{angle}deg)"
+					'-o-transform': "rotate(#{angle}deg)"
+					'-ms-transform': "rotate(#{angle}deg)"
+					'transform': "rotate(#{angle}deg)"
+			
 			@setCoord coord
 			@move @tankModel.getAngle()
 
@@ -574,11 +583,10 @@
 		.b-bullet{
 			z-index:99;
 			position:fixed;
-			width:8px;
-			height:8px;
+			width:2px;
+			height:9px;
 			background-color:#000;
 			background-size:cover;
-			border-radius:16px;
 			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAJCAYAAAAYcf3nAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEJJREFUeNpiXDDN25gBCFi+fGWcB2Y8e8EsAGb8Z2DgBzO+fvsJYbz/8PsjmMHAyLgSzPjx8/dZMOP5y3dgBkCAAQBGkBX6+U6nkAAAAABJRU5ErkJggg==);
 		}
 		
