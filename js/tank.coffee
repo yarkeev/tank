@@ -486,7 +486,7 @@
 								delete @_pressed[@keyMap.space]
 								@lastShotTime = now
 			else
-				@$tank.removeClass 'moving'
+				# @$tank.removeClass 'moving'
 
 			requestAnimFrame @update.bind(@), @$tank
 

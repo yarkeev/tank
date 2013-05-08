@@ -629,7 +629,7 @@ var __hasProp = {}.hasOwnProperty,
           }
         }
       } else {
-        this.$tank.removeClass('moving');
+
       }
       return requestAnimFrame(this.update.bind(this), this.$tank);
     };
