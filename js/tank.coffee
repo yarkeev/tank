@@ -577,8 +577,8 @@
 			
 			@-webkit-keyframes animatedBackground {
 				0% { background-position: 0 0; }
-				50% { background-position: 50% 0; }
-				100% { background-position: 100% 0; }
+				50% { background-position: 60px 0; }
+				100% { background-position: 60px 0; }
 			}
 			'
 
