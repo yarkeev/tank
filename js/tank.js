@@ -183,18 +183,19 @@ var __hasProp = {}.hasOwnProperty,
 
 
     Observer.prototype.publish = function(id) {
-      var args, handler, handlers, key, _ref;
+      var args, handler, handlers, key;
       id = $.trim(id);
       if (id.length === 0) {
         this.error('incorrect id in Observer.publish');
       }
       handlers = this._subscribers[id];
       args = Array.prototype.slice.call(arguments, 1);
-      _ref = this._subscribers[id];
-      for (key in _ref) {
-        handler = _ref[key];
-        if (handler != null) {
-          handler.apply(this, args);
+      for (key in handlers) {
+        handler = handlers[key];
+        if (handlers.hasOwnProperty(key)) {
+          if (handler != null) {
+            handler.apply(this, args);
+          }
         }
       }
       return this;

@@ -161,8 +161,9 @@
 				@error 'incorrect id in Observer.publish'
 			handlers = @_subscribers[id]
 			args = Array.prototype.slice.call arguments, 1 
-			for key, handler of @_subscribers[id]
-				handler?.apply @, args
+			for key, handler of handlers
+				if handlers.hasOwnProperty key
+					handler?.apply @, args
 			@
 
 	###
