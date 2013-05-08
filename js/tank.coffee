@@ -577,7 +577,7 @@
 			
 			@-webkit-keyframes tankAnimation {
 				from { background-position: 0 0; }
-				to { background-position: 0 600px; }
+				to { background-position: 0 700px; }
 			}
 			'
 
