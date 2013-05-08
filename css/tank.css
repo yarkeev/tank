@@ -1,24 +1,6 @@
-.b-tank {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 75px;
-  height: 150px;
-  margin: -75px 0 -37.5px;
-  background-image: url("/images/t34.jpg");
-  background-size: cover;
-}
-.b-bullet {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  background-color: #000;
-  border-radius: 16px;
-}
-.b-bullet.explode {
-  width: 50px;
-  height: 50px;
-  background-color: transparent;
-  background-image: url("/images/explode.gif");
-  background-size: cover;
-}
+.b-tank{position:fixed;top:50%;left:50%;width:60px;height:140px;margin:-70px 0 -30px;background-image:url("/images/tank_still.gif");background-size:cover;}
+.b-tank.moving{background-image:url("/images/tank_moving.gif")}
+.b-tank.shooting{background-image:url("/images/tank_shooting.gif")}
+.b-bullet{position:fixed;width:8px;height:8px;background-color:#000;background-size:cover;border-radius:16px;}
+.b-bullet.explode{width:50px;height:50px;background-color:transparent;background-image:url("/images/explode.gif")}
+.b-bullet.hole{background-image:url("/images/shell_hole.png")}
