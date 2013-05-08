@@ -590,7 +590,7 @@
 
 		@-webkit-keyframes bulletAnimation {
 			from { background-position: 0 0; }
-			to { background-position: 480px 0; }
+			to { background-position: 528px 0; }
 		}
 			'
 
