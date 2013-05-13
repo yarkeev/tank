@@ -219,6 +219,12 @@
 			###
 			@_angleUpdateDelay = DEFAULT_ANGLE_UPDATE_DELAY
 
+			###
+			# flag of enable tank
+			# @var {boolean}
+			###
+			@_enabled = false
+
 		###
 		# Set direction of tank
 		# @param {string} direction
@@ -232,6 +238,21 @@
 
 		destroy: ->
 
+
+		###
+		# Set enabled state
+		###
+		enable: ->
+			@_enabled = true
+
+		###
+		# Set disbled state
+		###
+		disable: ->
+			@_enabled = false
+
+		isEnabled: ->
+			@_enabled
 
 		###
 		# Set speed of tank
@@ -539,10 +560,8 @@
 			@domHandlers = 
 				keydown: (event) =>
 					@_onKeyDown event
-					event.preventDefault()
 				keyup: (event) =>
 					@_onKeyUp event
-					event.preventDefault()
 
 			@_$domContainer.on 'keydown', @domHandlers.keydown
 			@_$domContainer.on 'keyup', @domHandlers.keyup
@@ -559,14 +578,18 @@
 		# @param {jQuery.Event} event jquery event object
 		###
 		_onKeyDown: (event) ->
-			@_pressed[event.keyCode] = true
+			if @model.isEnabled()
+				@_pressed[event.keyCode] = true
+				event.preventDefault()
 
 		###
 		# key up handler
 		# @param {jQuery.Event} event jquery event object
 		###
 		_onKeyUp: (event) ->
-			delete @_pressed[event.keyCode]
+			if @model.isEnabled()
+				delete @_pressed[event.keyCode]
+				event.preventDefault()
 
 	###
 	# class of tank
@@ -581,6 +604,8 @@
 
 			@model = new TankModel()
 			@view = new TankView @model
+
+			@_bindEvents()
 
 		###
 		# tank destroy
@@ -603,7 +628,7 @@
 
 			$(document.body)
 				.on 'tank.enable', (event) =>
-					@_bindEvents()
+					@model.enable()
 				.on 'tank.destroy', (event) =>
 					@destroy()
 

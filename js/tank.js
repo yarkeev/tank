@@ -261,6 +261,12 @@ var __hasProp = {}.hasOwnProperty,
       */
 
       this._angleUpdateDelay = DEFAULT_ANGLE_UPDATE_DELAY;
+      /*
+      			# flag of enable tank
+      			# @var {boolean}
+      */
+
+      this._enabled = false;
     }
 
     /*
@@ -279,6 +285,28 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     TankModel.prototype.destroy = function() {};
+
+    /*
+    		# Set enabled state
+    */
+
+
+    TankModel.prototype.enable = function() {
+      return this._enabled = true;
+    };
+
+    /*
+    		# Set disbled state
+    */
+
+
+    TankModel.prototype.disable = function() {
+      return this._enabled = false;
+    };
+
+    TankModel.prototype.isEnabled = function() {
+      return this._enabled;
+    };
 
     /*
     		# Set speed of tank
@@ -700,12 +728,10 @@ var __hasProp = {}.hasOwnProperty,
       var _this = this;
       this.domHandlers = {
         keydown: function(event) {
-          _this._onKeyDown(event);
-          return event.preventDefault();
+          return _this._onKeyDown(event);
         },
         keyup: function(event) {
-          _this._onKeyUp(event);
-          return event.preventDefault();
+          return _this._onKeyUp(event);
         }
       };
       this._$domContainer.on('keydown', this.domHandlers.keydown);
@@ -729,7 +755,10 @@ var __hasProp = {}.hasOwnProperty,
 
 
     TankView.prototype._onKeyDown = function(event) {
-      return this._pressed[event.keyCode] = true;
+      if (this.model.isEnabled()) {
+        this._pressed[event.keyCode] = true;
+        return event.preventDefault();
+      }
     };
 
     /*
@@ -739,7 +768,10 @@ var __hasProp = {}.hasOwnProperty,
 
 
     TankView.prototype._onKeyUp = function(event) {
-      return delete this._pressed[event.keyCode];
+      if (this.model.isEnabled()) {
+        delete this._pressed[event.keyCode];
+        return event.preventDefault();
+      }
     };
 
     return TankView;
@@ -762,6 +794,7 @@ var __hasProp = {}.hasOwnProperty,
       Tank.__super__.constructor.apply(this, arguments);
       this.model = new TankModel();
       this.view = new TankView(this.model);
+      this._bindEvents();
     }
 
     /*
@@ -791,7 +824,7 @@ var __hasProp = {}.hasOwnProperty,
         return _this.view.rotate(angle);
       });
       return $(document.body).on('tank.enable', function(event) {
-        return _this._bindEvents();
+        return _this.model.enable();
       }).on('tank.destroy', function(event) {
         return _this.destroy();
       });
