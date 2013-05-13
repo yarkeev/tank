@@ -503,6 +503,7 @@ var __hasProp = {}.hasOwnProperty,
         left: coord.left + (width / 2) + (height / 2) * Math.cos(angle + Math.PI),
         top: coord.top + (height / 2) * Math.sin(angle + Math.PI)
       };
+      console.log(this.position, coord);
       return this.$bullet.css(this.position);
     };
 
