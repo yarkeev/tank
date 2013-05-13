@@ -398,8 +398,8 @@
 			$('<div></div>').appendTo(document.body).css({position:'fixed',width: 2, height: 2, background: 'red'}).offset(coord);
 
 			@position =
-				left: coord.left + (height / 2) * Math.cos(angle + Math.PI)
-				top: coord.top + (height / 2) * Math.sin(angle + Math.PI)
+				left: coord.left + (height / 2) * Math.sin(angle + Math.PI)
+				top: coord.top + (height / 2) * Math.cos(angle + Math.PI)
 			console.log @position, coord
 			$('<div></div>').appendTo(document.body).css({position:'fixed',width: 2, height: 2, background: 'blue'}).offset(@position);
 			@$bullet.css @position
