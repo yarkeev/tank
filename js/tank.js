@@ -498,15 +498,15 @@ var __hasProp = {}.hasOwnProperty,
       angle = this.tankModel.getAngle();
       width = this.tankModel.width;
       height = this.tankModel.height;
+      if ((angle > Math.PI / 2) && (angle < Math.PI * .75)) {
+        coord.left += width / 2;
+      }
       $('<div></div>').appendTo(document.body).css({
         position: 'fixed',
         width: 2,
         height: 2,
         background: 'red'
       }).offset(coord);
-      if ((angle > Math.PI / 2) && (angle < Math.PI * .75)) {
-        coord.left += width / 2;
-      }
       this.position = {
         left: coord.left + (width / 2) + (height / 2) * Math.cos(angle + Math.PI),
         top: coord.top + (height / 2) * Math.sin(angle + Math.PI)

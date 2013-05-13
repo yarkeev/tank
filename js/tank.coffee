@@ -395,10 +395,10 @@
 			width = @tankModel.width
 			height = @tankModel.height
 
-			$('<div></div>').appendTo(document.body).css({position:'fixed',width: 2, height: 2, background: 'red'}).offset(coord);
-
 			if (angle > Math.PI / 2) && (angle < Math.PI * .75)
 				coord.left += width / 2
+
+			$('<div></div>').appendTo(document.body).css({position:'fixed',width: 2, height: 2, background: 'red'}).offset(coord);
 
 			@position =
 				left: coord.left + (width / 2) + (height / 2) * Math.cos(angle + Math.PI)
