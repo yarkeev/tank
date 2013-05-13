@@ -499,7 +499,7 @@ var __hasProp = {}.hasOwnProperty,
       angle = this.tankModel.getAngle();
       width = this.tankModel.width;
       height = this.tankModel.height;
-      r = 1;
+      r = 100;
       this.position = {
         left: coord.left + (width / 2) + r * Math.cos(angle + Math.PI),
         top: coord.top + (height / 2) + r * Math.sin(angle + Math.PI)
