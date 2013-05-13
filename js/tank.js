@@ -606,7 +606,8 @@ var __hasProp = {}.hasOwnProperty,
         left: this.position.left + sign * speed * Math.cos(angle),
         top: this.position.top + sign * speed * Math.sin(angle)
       };
-      return this.$tank.css(this.position);
+      this.$tank.css(this.position);
+      return $(document.body).trigger('tank.move');
     };
 
     /*
@@ -655,7 +656,7 @@ var __hasProp = {}.hasOwnProperty,
     TankView.prototype.rotate = function(angle) {
       var cos, sin;
       if (!$.browser.msie) {
-        return this.$tank.css({
+        this.$tank.css({
           '-webkit-transform': "rotate(" + angle + "deg)",
           '-moz-transform': "rotate(" + angle + "deg)",
           '-o-transform': "rotate(" + angle + "deg)",
@@ -665,11 +666,12 @@ var __hasProp = {}.hasOwnProperty,
       } else {
         cos = Math.cos(angle);
         sin = Math.sin(angle);
-        return this.$tank.css({
+        this.$tank.css({
           filter: 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')',
           '-ms-filter': 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')'
         });
       }
+      return $(document.body).trigger('tank.rotate');
     };
 
     /*

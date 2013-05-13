@@ -477,6 +477,8 @@
 
 			@$tank.css @position
 
+			$(document.body).trigger 'tank.move'
+
 		###
 		# shot (create bullet)
 		###
@@ -517,6 +519,8 @@
 				@$tank.css
 					filter: 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')'
 					'-ms-filter': 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')'
+
+			$(document.body).trigger 'tank.rotate'
 
 		###
 		# update view
