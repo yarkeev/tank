@@ -505,7 +505,7 @@ var __hasProp = {}.hasOwnProperty,
         background: 'red'
       }).offset(coord);
       this.position = {
-        left: coord.left + (width / 2) + (height / 2) * Math.cos(angle + Math.PI),
+        left: coord.left + (height / 2) * Math.cos(angle + Math.PI),
         top: coord.top + (height / 2) * Math.sin(angle + Math.PI)
       };
       console.log(this.position, coord);
