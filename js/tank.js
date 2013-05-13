@@ -591,7 +591,7 @@ var __hasProp = {}.hasOwnProperty,
         top: 0
       }, position);
       this.$tank.css(position);
-      return this.position = position;
+      return this.position = this.$tank.offset();
     };
 
     /*
