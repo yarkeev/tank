@@ -394,7 +394,7 @@
 			angle = @tankModel.getAngle()
 			width = @tankModel.width
 			height = @tankModel.height
-			r = 100
+			r = 70
 
 			@position =
 				left: coord.left + (width / 2) + r * Math.cos(angle + Math.PI)
