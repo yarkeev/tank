@@ -375,7 +375,7 @@
 					'transform': "rotate(#{angle}deg)"
 
 			@setCoord coord
-			@move @tankModel.getAngle()
+			#@move @tankModel.getAngle()
 
 		###
 		# bullet destroy

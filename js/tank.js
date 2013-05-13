@@ -474,7 +474,6 @@ var __hasProp = {}.hasOwnProperty,
         'transform': "rotate(" + angle + "deg)"
       });
       this.setCoord(coord);
-      this.move(this.tankModel.getAngle());
     }
 
     /*
