@@ -498,11 +498,23 @@ var __hasProp = {}.hasOwnProperty,
       angle = this.tankModel.getAngle();
       width = this.tankModel.width;
       height = this.tankModel.height;
+      $('<div></div>').appendTo(document.body).css({
+        position: 'fixed',
+        width: 2,
+        height: 2,
+        background: 'red'
+      }).offset(coord);
       this.position = {
         left: coord.left + (width / 2) + (height / 2) * Math.cos(angle + Math.PI),
         top: coord.top + (height / 2) * Math.sin(angle + Math.PI)
       };
       console.log(this.position, coord);
+      $('<div></div>').appendTo(document.body).css({
+        position: 'fixed',
+        width: 2,
+        height: 2,
+        background: 'blue'
+      }).offset(this.position);
       return this.$bullet.css(this.position);
     };
 
