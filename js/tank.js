@@ -762,7 +762,6 @@ var __hasProp = {}.hasOwnProperty,
       Tank.__super__.constructor.apply(this, arguments);
       this.model = new TankModel();
       this.view = new TankView(this.model);
-      this._bindEvents();
     }
 
     /*
@@ -791,7 +790,9 @@ var __hasProp = {}.hasOwnProperty,
       this.model.on('angleChange', function(angle) {
         return _this.view.rotate(angle);
       });
-      return $(document.body).on('tank.destroy', function(event) {
+      return $(document.body).on('tank.enable', function(event) {
+        return _this._bindEvents();
+      }).on('tank.destroy', function(event) {
         return _this.destroy();
       });
     };

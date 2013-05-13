@@ -582,8 +582,6 @@
 			@model = new TankModel()
 			@view = new TankView @model
 
-			@_bindEvents()
-
 		###
 		# tank destroy
 		###
@@ -603,8 +601,11 @@
 			@model.on 'angleChange', (angle) =>
 				@view.rotate angle
 
-			$(document.body).on 'tank.destroy', (event) =>
-				@destroy()
+			$(document.body)
+				.on 'tank.enable', (event) =>
+					@_bindEvents()
+				.on 'tank.destroy', (event) =>
+					@destroy()
 
 
 	$ () ->
