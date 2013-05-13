@@ -375,7 +375,7 @@
 					'transform': "rotate(#{angle}deg)"
 
 			@setCoord coord
-			#@move @tankModel.getAngle()
+			@move @tankModel.getAngle()
 
 		###
 		# bullet destroy
@@ -396,13 +396,10 @@
 			height = @tankModel.height
 			r = 50
 
-			$('<div></div>').appendTo(document.body).css({position:'fixed',width: 2, height: 2, background: 'red'}).offset(coord);
-
 			@position =
 				left: coord.left + r * Math.cos(angle + Math.PI)
 				top: coord.top + (height / 2) + r * Math.sin(angle + Math.PI)
 			
-			$('<div></div>').appendTo(document.body).css({position:'fixed',width: 2, height: 2, background: 'blue'}).offset(@position);
 			@$bullet.css @position
 
 		###

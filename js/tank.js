@@ -474,6 +474,7 @@ var __hasProp = {}.hasOwnProperty,
         'transform': "rotate(" + angle + "deg)"
       });
       this.setCoord(coord);
+      this.move(this.tankModel.getAngle());
     }
 
     /*
@@ -499,22 +500,10 @@ var __hasProp = {}.hasOwnProperty,
       width = this.tankModel.width;
       height = this.tankModel.height;
       r = 50;
-      $('<div></div>').appendTo(document.body).css({
-        position: 'fixed',
-        width: 2,
-        height: 2,
-        background: 'red'
-      }).offset(coord);
       this.position = {
         left: coord.left + r * Math.cos(angle + Math.PI),
         top: coord.top + (height / 2) + r * Math.sin(angle + Math.PI)
       };
-      $('<div></div>').appendTo(document.body).css({
-        position: 'fixed',
-        width: 2,
-        height: 2,
-        background: 'blue'
-      }).offset(this.position);
       return this.$bullet.css(this.position);
     };
 
