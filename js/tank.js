@@ -752,7 +752,7 @@ var __hasProp = {}.hasOwnProperty,
 		\
 		.b-bullet{\
 			z-index:999;\
-			position:fixed;\
+			position:absolute;\
 			width:2px;\
 			height:9px;\
 			background-color:#000;\
