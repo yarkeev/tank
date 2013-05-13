@@ -561,7 +561,7 @@
 		$style.html '
 		.b-tank{
 				z-index: 1000;
-				position:fixed;
+				position: absolute;
 				top:50%;
 				left:50%;
 				width:60px;
