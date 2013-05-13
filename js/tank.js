@@ -506,7 +506,7 @@ var __hasProp = {}.hasOwnProperty,
       }).offset(coord);
       this.position = {
         left: coord.left + (height / 2) * Math.cos(angle + Math.PI),
-        top: coord.top + (height / 2) * Math.sin(angle + Math.PI) - (height / 2)
+        top: coord.top + (height / 2) + (height / 2) * Math.sin(angle + Math.PI)
       };
       $('<div></div>').appendTo(document.body).css({
         position: 'fixed',
