@@ -644,7 +644,7 @@
 		$style.html '
 		.b-tank{
 			z-index: 1000;
-			position: absolute;
+			position: fixed;
 			top:50%;
 			left:50%;
 			width:60px;
@@ -665,7 +665,7 @@
 		
 		.b-bullet{
 			z-index:999;
-			position:absolute;
+			position:fixed;
 			width:2px;
 			height:9px;
 			background-color:#000;
