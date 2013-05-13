@@ -208,6 +208,12 @@
 			@height = DEFAULT_TANK_HEIGHT
 
 			###
+			# big side
+			# @var {number}
+			###
+			@bigSide = (@width > @height) ? @width : @height
+
+			###
 			# angle tank rotate
 			# @var {number}
 			###
@@ -466,6 +472,14 @@
 
 			@$tank.css position
 			@position = position
+
+			@center = 
+				left: @position.left + (@model.bigSide / 2)
+				top: @position.top + (@model.bigSide / 2)
+
+			@$tank.attr
+				'data-center-x': @center.left
+				'data-center-y': @center.top
 
 		###
 		# move tank

@@ -218,6 +218,7 @@ var __hasProp = {}.hasOwnProperty,
 
 
     function TankModel() {
+      var _ref;
       TankModel.__super__.constructor.apply(this, arguments);
       /*
       			# Current directrion
@@ -249,6 +250,14 @@ var __hasProp = {}.hasOwnProperty,
       */
 
       this.height = DEFAULT_TANK_HEIGHT;
+      /*
+      			# big side
+      			# @var {number}
+      */
+
+      this.bigSide = (_ref = this.width > this.height) != null ? _ref : {
+        this.width: this.height
+      };
       /*
       			# angle tank rotate
       			# @var {number}
@@ -591,7 +600,15 @@ var __hasProp = {}.hasOwnProperty,
         top: 0
       }, position);
       this.$tank.css(position);
-      return this.position = position;
+      this.position = position;
+      this.center = {
+        left: this.position.left + (this.model.bigSide / 2),
+        top: this.position.top + (this.model.bigSide / 2)
+      };
+      return this.$tank.attr({
+        'data-center-x': this.center.left,
+        'data-center-y': this.center.top
+      });
     };
 
     /*
