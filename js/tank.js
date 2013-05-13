@@ -500,8 +500,8 @@ var __hasProp = {}.hasOwnProperty,
       width = this.tankModel.width;
       height = this.tankModel.height;
       this.position = {
-        left: coord.left + (width / 2) + (height / 2 - 30) * Math.cos(angle + Math.PI),
-        top: coord.top + (height / 2 - 30) * Math.sin(angle + Math.PI)
+        left: coord.left + (width / 2) + (height / 2) * Math.cos(angle + Math.PI),
+        top: coord.top + (height / 2) * Math.sin(angle + Math.PI)
       };
       console.log(this.position, coord);
       return this.$bullet.css(this.position);
