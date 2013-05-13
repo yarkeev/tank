@@ -400,7 +400,7 @@
 			@position =
 				left: coord.left + (width / 2) + (height / 2) * Math.cos(angle + Math.PI)
 				top: coord.top + (height / 2) * Math.sin(angle + Math.PI)
-			console.log coord.left
+			console.log coord.left, angle
 			$('<div></div>').appendTo(document.body).css({position:'fixed',width: 2, height: 2, background: 'blue'}).offset(@position);
 			@$bullet.css @position
 
