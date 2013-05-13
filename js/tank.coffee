@@ -211,7 +211,7 @@
 			# big side
 			# @var {number}
 			###
-			@bigSide = (@width > @height) ? @width : @height
+			@bigSide = if (@width > @height) then @width else @height
 
 			###
 			# angle tank rotate

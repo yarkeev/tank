@@ -218,7 +218,6 @@ var __hasProp = {}.hasOwnProperty,
 
 
     function TankModel() {
-      var _ref;
       TankModel.__super__.constructor.apply(this, arguments);
       /*
       			# Current directrion
@@ -255,9 +254,7 @@ var __hasProp = {}.hasOwnProperty,
       			# @var {number}
       */
 
-      this.bigSide = (_ref = this.width > this.height) != null ? _ref : {
-        this.width: this.height
-      };
+      this.bigSide = this.width > this.height ? this.width : this.height;
       /*
       			# angle tank rotate
       			# @var {number}
