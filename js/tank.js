@@ -494,10 +494,11 @@ var __hasProp = {}.hasOwnProperty,
 
 
     BulletView.prototype.setCoord = function(coord, direction) {
-      var angle, height, width;
+      var angle, height, r, width;
       angle = this.tankModel.getAngle();
       width = this.tankModel.width;
       height = this.tankModel.height;
+      r = 50;
       $('<div></div>').appendTo(document.body).css({
         position: 'fixed',
         width: 2,
@@ -505,8 +506,8 @@ var __hasProp = {}.hasOwnProperty,
         background: 'red'
       }).offset(coord);
       this.position = {
-        left: coord.left + (height / 2) * Math.cos(angle + Math.PI),
-        top: coord.top + (height / 2) + (height / 2) * Math.sin(angle + Math.PI)
+        left: coord.left + r * Math.cos(angle + Math.PI),
+        top: coord.top + (height / 2) + r * Math.sin(angle + Math.PI)
       };
       $('<div></div>').appendTo(document.body).css({
         position: 'fixed',
