@@ -498,10 +498,6 @@ var __hasProp = {}.hasOwnProperty,
       angle = this.tankModel.getAngle();
       width = this.tankModel.width;
       height = this.tankModel.height;
-      if ((angle > Math.PI / 2) && (angle < Math.PI * .75)) {
-        coord.left += width / 2;
-      }
-      console.log(coord.left);
       $('<div></div>').appendTo(document.body).css({
         position: 'fixed',
         width: 2,
@@ -654,7 +650,7 @@ var __hasProp = {}.hasOwnProperty,
     TankView.prototype.shot = function() {
       var bulletModel, bulletView;
       bulletModel = new BulletModel;
-      bulletView = new BulletView(this.$tank.offset(), bulletModel, this.model);
+      bulletView = new BulletView(this.position, bulletModel, this.model);
       return this._bullets.push({
         model: bulletModel,
         view: bulletView

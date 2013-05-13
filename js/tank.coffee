@@ -395,9 +395,6 @@
 			width = @tankModel.width
 			height = @tankModel.height
 
-			if (angle > Math.PI / 2) && (angle < Math.PI * .75)
-				coord.left += width / 2
-			console.log coord.left
 			$('<div></div>').appendTo(document.body).css({position:'fixed',width: 2, height: 2, background: 'red'}).offset(coord);
 
 			@position =
@@ -512,7 +509,7 @@
 		###
 		shot: ->
 			bulletModel = new BulletModel
-			bulletView = new BulletView @$tank.offset(), bulletModel, @model
+			bulletView = new BulletView @position, bulletModel, @model
 
 			@_bullets.push
 				model: bulletModel
