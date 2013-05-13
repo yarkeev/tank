@@ -829,6 +829,8 @@ var __hasProp = {}.hasOwnProperty,
         return _this.model.enable();
       }).on('tank.destroy', function(event) {
         return _this.destroy();
+      }).on('tank.setPosition', function(event, data) {
+        return console.log(data);
       });
     };
 

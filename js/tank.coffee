@@ -635,6 +635,8 @@
 					@model.enable()
 				.on 'tank.destroy', (event) =>
 					@destroy()
+				.on 'tank.setPosition', (event, data) =>
+					console.log data
 
 
 	$ () ->
