@@ -639,10 +639,7 @@ var __hasProp = {}.hasOwnProperty,
     TankView.prototype.shot = function() {
       var bulletModel, bulletView;
       bulletModel = new BulletModel;
-      bulletView = new BulletView({
-        left: parseInt(this.$tank.css('left')),
-        top: parseInt(this.$tank.css('top'))
-      }, bulletModel, this.model);
+      bulletView = new BulletView(this.$tank.offset(), bulletModel, this.model);
       return this._bullets.push({
         model: bulletModel,
         view: bulletView

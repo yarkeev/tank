@@ -505,10 +505,7 @@
 		###
 		shot: ->
 			bulletModel = new BulletModel
-			bulletView = new BulletView
-				left: parseInt(@$tank.css('left'))
-				top: parseInt(@$tank.css('top'))
-			, bulletModel, @model
+			bulletView = new BulletView @$tank.offset(), bulletModel, @model
 
 			@_bullets.push
 				model: bulletModel
