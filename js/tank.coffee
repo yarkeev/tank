@@ -603,6 +603,9 @@
 			@model.on 'angleChange', (angle) =>
 				@view.rotate angle
 
+			$(document.body).on 'tank.destroy', (event) =>
+				@destroy()
+
 
 	$ () ->
 		DOM_CONTAINER = $(document.body)

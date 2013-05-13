@@ -788,8 +788,11 @@ var __hasProp = {}.hasOwnProperty,
       this.view.on('rightKeyDown', function(event) {
         return _this.model.rotate('right');
       });
-      return this.model.on('angleChange', function(angle) {
+      this.model.on('angleChange', function(angle) {
         return _this.view.rotate(angle);
+      });
+      return $(document.body).on('tank.destroy', function(event) {
+        return _this.destroy();
       });
     };
 
