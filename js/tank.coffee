@@ -465,7 +465,7 @@
 			, position
 
 			@$tank.css position
-			@position = @$tank.offset()
+			@position = position
 
 		###
 		# move tank
