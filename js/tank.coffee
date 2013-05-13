@@ -441,8 +441,7 @@
 
 			@model = model
 			@$tank = $("<div class='#{CLASSES.tank.main}'></div>").appendTo @_$domContainer
-			@$tank.css @$tank.position()
-			@position = @$tank.position()
+			@setPosition @$tank.position()
 			@lastShotTime = (new Date()).getTime()
 			@_pressed = {}
 			@_bindEvents()
@@ -458,6 +457,15 @@
 			@_unbindEvents()
 			@clearShots()
 
+		setPosition: (position) ->
+			position = $.extend
+				left: 0
+				top: 0
+			, position
+
+			@$tank.css position
+			@position = position
+
 		###
 		# move tank
 		# @param {string} directionX
@@ -471,11 +479,9 @@
 			if direction == 'back'
 				sign = 1
 
-			@position =
+			@setPosition
 				left: @position.left + sign * speed * Math.cos angle
 				top: @position.top + sign * speed * Math.sin angle
-
-			@$tank.css @position
 
 			$(document.body).trigger 'tank.move'
 
@@ -635,8 +641,8 @@
 					@model.enable()
 				.on 'tank.destroy', (event) =>
 					@destroy()
-				.on 'tank.setPosition', (event, data) =>
-					console.log data
+				.on 'tank.setPosition', (event, coord) =>
+					@view.setPosition coord
 
 
 	$ () ->

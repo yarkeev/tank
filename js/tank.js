@@ -566,8 +566,7 @@ var __hasProp = {}.hasOwnProperty,
       }
       this.model = model;
       this.$tank = $("<div class='" + CLASSES.tank.main + "'></div>").appendTo(this._$domContainer);
-      this.$tank.css(this.$tank.position());
-      this.position = this.$tank.position();
+      this.setPosition(this.$tank.position());
       this.lastShotTime = (new Date()).getTime();
       this._pressed = {};
       this._bindEvents();
@@ -586,6 +585,15 @@ var __hasProp = {}.hasOwnProperty,
       return this.clearShots();
     };
 
+    TankView.prototype.setPosition = function(position) {
+      position = $.extend({
+        left: 0,
+        top: 0
+      }, position);
+      this.$tank.css(position);
+      return this.position = position;
+    };
+
     /*
     		# move tank
     		# @param {string} directionX
@@ -602,11 +610,10 @@ var __hasProp = {}.hasOwnProperty,
       if (direction === 'back') {
         sign = 1;
       }
-      this.position = {
+      this.setPosition({
         left: this.position.left + sign * speed * Math.cos(angle),
         top: this.position.top + sign * speed * Math.sin(angle)
-      };
-      this.$tank.css(this.position);
+      });
       return $(document.body).trigger('tank.move');
     };
 
@@ -829,8 +836,8 @@ var __hasProp = {}.hasOwnProperty,
         return _this.model.enable();
       }).on('tank.destroy', function(event) {
         return _this.destroy();
-      }).on('tank.setPosition', function(event, data) {
-        return console.log(data);
+      }).on('tank.setPosition', function(event, coord) {
+        return _this.view.setPosition(coord);
       });
     };
 
