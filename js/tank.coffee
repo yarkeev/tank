@@ -472,6 +472,8 @@
 				top: 0
 			, position
 
+			offset = @$tank.offset()
+
 			angle = @model.getAngle()
 			width = @model.width
 			height = @model.height
@@ -480,8 +482,8 @@
 			@position = position
 
 			@center = 
-				left: @position.left + (width / 2) + 1 * Math.cos(angle + Math.PI)
-				top: @position.top + (height / 2) + 1 * Math.sin(angle + Math.PI)
+				left: offset.left + (width / 2) + 1 * Math.cos(angle + Math.PI)
+				top: offset.top + (height / 2) + 1 * Math.sin(angle + Math.PI)
 			
 			@$tank.data
 				centerX: @center.left
