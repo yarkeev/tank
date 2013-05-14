@@ -593,20 +593,19 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     TankView.prototype.setPosition = function(position) {
-      var angle, height, offset, width;
+      var angle, height, width;
       position = $.extend({
         left: 0,
         top: 0
       }, position);
-      offset = this.$tank.offset();
       angle = this.model.getAngle();
       width = this.model.width;
       height = this.model.height;
       this.$tank.css(position);
       this.position = position;
       this.center = {
-        left: offset.left + (width / 2) + 1 * Math.cos(angle + Math.PI),
-        top: offset.top + (height / 2) + 1 * Math.sin(angle + Math.PI)
+        left: this.position.left + (width / 2) + 1 * Math.cos(angle + Math.PI),
+        top: this.position.top + (height / 2) + 1 * Math.sin(angle + Math.PI)
       };
       return this.$tank.data({
         centerX: this.center.left,
