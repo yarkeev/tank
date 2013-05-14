@@ -471,14 +471,17 @@
 				left: 0
 				top: 0
 			, position
+
 			angle = @model.getAngle()
+			width = @model.width
+			height = @model.height
 
 			@$tank.css position
 			@position = position
 
 			@center = 
-				left: @position.left + (width / 2) + r * Math.cos(angle + Math.PI)
-				top: @position.top + (height / 2) + r * Math.sin(angle + Math.PI)
+				left: @position.left + (width / 2) + 1 * Math.cos(angle + Math.PI)
+				top: @position.top + (height / 2) + 1 * Math.sin(angle + Math.PI)
 
 			@$tank.attr
 				'data-center-x': @center.left
