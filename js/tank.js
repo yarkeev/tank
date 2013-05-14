@@ -607,9 +607,6 @@ var __hasProp = {}.hasOwnProperty,
         left: this.position.left + (width / 2) + 1 * Math.cos(angle + Math.PI),
         top: this.position.top + (height / 2) + 1 * Math.sin(angle + Math.PI)
       };
-      if (Math.PI / 2 - angle < .3) {
-        this.center.left -= width / 2;
-      }
       return this.$tank.data({
         centerX: this.center.left,
         centerY: this.center.top
