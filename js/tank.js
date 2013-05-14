@@ -495,7 +495,7 @@ var __hasProp = {}.hasOwnProperty,
 
     BulletView.prototype.setCoord = function(coord, direction) {
       this.position = {
-        left: coord.left - this.model.width,
+        left: coord.left - 10,
         top: coord.top - this.model.height
       };
       return this.$bullet.css(this.position);

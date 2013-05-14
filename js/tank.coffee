@@ -392,7 +392,7 @@
 		###
 		setCoord: (coord, direction) ->
 			@position =
-				left: coord.left - @model.width
+				left: coord.left - 10
 				top: coord.top - @model.height
 
 			@$bullet.css @position
