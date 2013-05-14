@@ -603,7 +603,6 @@ var __hasProp = {}.hasOwnProperty,
       height = this.model.height;
       this.$tank.css(position);
       this.position = position;
-      console.log(angle);
       this.center = {
         left: this.position.left + (width / 2) + 1 * Math.cos(angle + Math.PI),
         top: this.position.top + (height / 2) + 1 * Math.sin(angle + Math.PI)

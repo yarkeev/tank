@@ -479,7 +479,6 @@
 			@$tank.css position
 			@position = position
 
-			console.log angle
 			@center = 
 				left: @position.left + (width / 2) + 1 * Math.cos(angle + Math.PI)
 				top: @position.top + (height / 2) + 1 * Math.sin(angle + Math.PI)
