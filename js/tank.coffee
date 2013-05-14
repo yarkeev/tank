@@ -5,6 +5,10 @@
 
 	DEFAULT_ANGLE_SPEED = 2
 
+	DEFAULT_BULLET_WIDTH = 2
+
+	DEFAULT_BULLET_HEIGHT = 9
+
 	DEFAULT_BULLET_SPEED = 300
 
 	DEFAULT_BULLET_LENGTH = 250
@@ -16,10 +20,6 @@
 	DEFAULT_TANK_WIDTH = 75
 
 	DEFAULT_TANK_HEIGHT = 150
-
-	DEFAULT_BULLET_WIDTH = 16
-
-	DEFAULT_BULLET_HEIGHT = 16
 
 	DEFAULT_BULLET_EXPLODE_TIME = 500
 
@@ -391,15 +391,10 @@
 		# @param {string} direction current tank direction
 		###
 		setCoord: (coord, direction) ->
-			angle = @tankModel.getAngle()
-			width = @tankModel.width
-			height = @tankModel.height
-			r = 70
-
 			@position =
-				left: coord.left# + (width / 2) + r * Math.cos(angle + Math.PI)
-				top: coord.top# + (height / 2) + r * Math.sin(angle + Math.PI)
-			
+				left: coord.left - @model.width
+				top: coord.top - @model.height
+
 			@$bullet.css @position
 
 		###
@@ -479,10 +474,10 @@
 			@$tank.css position
 			@position = position
 
-			@center = 
+			@center =
 				left: @position.left + (width / 2) + 1 * Math.cos(angle + Math.PI)
 				top: @position.top + (height / 2) + 1 * Math.sin(angle + Math.PI)
-			
+
 			@$tank.data
 				centerX: @center.left
 				centerY: @center.top

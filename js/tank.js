@@ -7,14 +7,14 @@ var __hasProp = {}.hasOwnProperty,
   var Base, BulletModel, BulletView, CLASSES, DEBUG, DEFAULT_ANGLE_SPEED, DEFAULT_ANGLE_UPDATE_DELAY, DEFAULT_BULLET_COORD_RANDOM, DEFAULT_BULLET_EXPLODE_TIME, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_LENGTH, DEFAULT_BULLET_LENGTH_RANDOM, DEFAULT_BULLET_SPEED, DEFAULT_BULLET_WIDTH, DEFAULT_SPEED, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, Observer, Tank, TankModel, TankView, View, requestAnimFrame;
   DEFAULT_SPEED = 5;
   DEFAULT_ANGLE_SPEED = 2;
+  DEFAULT_BULLET_WIDTH = 2;
+  DEFAULT_BULLET_HEIGHT = 9;
   DEFAULT_BULLET_SPEED = 300;
   DEFAULT_BULLET_LENGTH = 250;
   DEFAULT_BULLET_LENGTH_RANDOM = 100;
   DEFAULT_BULLET_COORD_RANDOM = 50;
   DEFAULT_TANK_WIDTH = 75;
   DEFAULT_TANK_HEIGHT = 150;
-  DEFAULT_BULLET_WIDTH = 16;
-  DEFAULT_BULLET_HEIGHT = 16;
   DEFAULT_BULLET_EXPLODE_TIME = 500;
   DEFAULT_ANGLE_UPDATE_DELAY = 100;
   DEBUG = true;
@@ -494,14 +494,9 @@ var __hasProp = {}.hasOwnProperty,
 
 
     BulletView.prototype.setCoord = function(coord, direction) {
-      var angle, height, r, width;
-      angle = this.tankModel.getAngle();
-      width = this.tankModel.width;
-      height = this.tankModel.height;
-      r = 70;
       this.position = {
-        left: coord.left,
-        top: coord.top
+        left: coord.left - this.model.width,
+        top: coord.top - this.model.height
       };
       return this.$bullet.css(this.position);
     };
