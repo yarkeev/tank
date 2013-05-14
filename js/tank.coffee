@@ -397,8 +397,8 @@
 			r = 70
 
 			@position =
-				left: coord.left + (width / 2) + r * Math.cos(angle + Math.PI)
-				top: coord.top + (height / 2) + r * Math.sin(angle + Math.PI)
+				left: coord.left #+ (width / 2) + r * Math.cos(angle + Math.PI)
+				top: coord.top #+ (height / 2) + r * Math.sin(angle + Math.PI)
 			
 			@$bullet.css @position
 
