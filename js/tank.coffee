@@ -483,6 +483,8 @@
 			@center = 
 				left: @position.left + (width / 2) + 1 * Math.cos(angle + Math.PI)
 				top: @position.top + (height / 2) + 1 * Math.sin(angle + Math.PI)
+			if Math.PI/2 - angle < .3
+				@center.left -= width / 2
 
 			@$tank.attr
 				'data-center-x': @center.left
