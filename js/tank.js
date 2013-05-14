@@ -644,7 +644,7 @@ var __hasProp = {}.hasOwnProperty,
     TankView.prototype.shot = function() {
       var bulletModel, bulletView;
       bulletModel = new BulletModel;
-      bulletView = new BulletView(this.position, bulletModel, this.model);
+      bulletView = new BulletView(this.center, bulletModel, this.model);
       return this._bullets.push({
         model: bulletModel,
         view: bulletView
