@@ -486,9 +486,9 @@
 			if Math.PI/2 - angle < .3
 				@center.left -= width / 2
 
-			@$tank.attr
-				'data-center-x': @center.left
-				'data-center-y': @center.top
+			@$tank.data
+				centerX: @center.left
+				centerY: @center.top
 
 		###
 		# move tank

@@ -611,9 +611,9 @@ var __hasProp = {}.hasOwnProperty,
       if (Math.PI / 2 - angle < .3) {
         this.center.left -= width / 2;
       }
-      return this.$tank.attr({
-        'data-center-x': this.center.left,
-        'data-center-y': this.center.top
+      return this.$tank.data({
+        centerX: this.center.left,
+        centerY: this.center.top
       });
     };
 
