@@ -405,14 +405,35 @@ var __hasProp = {}.hasOwnProperty,
 
       this._length = DEFAULT_BULLET_LENGTH;
       /*
-      			#
+      			# random length
+      			# @var {number}
       */
 
       this._randomLength = DEFAULT_BULLET_LENGTH_RANDOM;
+      /*
+      			# random coord
+      			# @var {number}
+      */
+
       this._randomCoord = DEFAULT_BULLET_COORD_RANDOM;
+      /*
+      			# bullet width
+      			# @var {number}
+      */
+
       this.width = DEFAULT_BULLET_WIDTH;
+      /*
+      			# bullet height
+      			# @var {number}
+      */
+
       this.height = DEFAULT_BULLET_HEIGHT;
     }
+
+    /*
+    		# destroy model
+    */
+
 
     BulletModel.prototype.destroy = function() {};
 
@@ -459,30 +480,49 @@ var __hasProp = {}.hasOwnProperty,
 
     /*
     		# @constructor
-    		# @param {number} coord.left X coordinate of tank
-    		# @param {number} coord.top Y coordinate of tank
+    		# @param {number} startPosition.left X coordinate of tank
+    		# @param {number} startPosition.top Y coordinate of tank
     		# @param {BulletModel} model model of ballet
     		# @param {TankModel} tankModel model of tank
     */
 
 
-    function BulletView(coord, model, tankModel) {
-      var angle;
+    function BulletView(startPosition, model, tankModel) {
       BulletView.__super__.constructor.apply(this, arguments);
+      /*
+      			# model of bullet
+      			# @var {BulletModel}
+      */
+
       this.model = model;
+      /*
+      			# model of tank
+      			# @var {TankModel}
+      */
+
       this.tankModel = tankModel;
+      /*
+      			# time of explosion
+      			# @var {number}
+      */
+
       this._explodeTime = DEFAULT_BULLET_EXPLODE_TIME;
+      /*
+      			# dom element of bullet
+      			# @var {jQuery}
+      */
+
       this.$bullet = $("<div class='" + CLASSES.bullet.main + "'></div>").appendTo(this._$domContainer);
-      angle = (this.tankModel.getAngle() * 180 / Math.PI) - 90;
-      this.$bullet.css({
-        '-webkit-transform': "rotate(" + angle + "deg)",
-        '-moz-transform': "rotate(" + angle + "deg)",
-        '-o-transform': "rotate(" + angle + "deg)",
-        '-ms-transform': "rotate(" + angle + "deg)",
-        'transform': "rotate(" + angle + "deg)"
-      });
-      this.setCoord(coord);
-      this.move(this.tankModel.getAngle());
+      /*
+      			# start bullet position
+      			# @var {object}
+      */
+
+      this._startPosition = $.extend({
+        left: 0,
+        top: 0
+      }, startPosition);
+      this.init();
     }
 
     /*
@@ -495,14 +535,34 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     /*
-    		# set start coordinate
-    		# @param {number} coord.left X coordinate of tank
-    		# @param {number} coord.top Y coordinate of tank
-    		# @param {string} direction current tank direction
+    		# init bullet
     */
 
 
-    BulletView.prototype.setCoord = function(coord, direction) {
+    BulletView.prototype.init = function() {
+      var bulletAngle, tankAngle, transform;
+      tankAngle = this.tankModel.getAngle();
+      bulletAngle = (tankAngle * 180 / Math.PI) - 90;
+      transform = "rotate(" + bulletAngle + "deg)";
+      this.$bullet.css({
+        '-webkit-transform': transform,
+        '-moz-transform': transform,
+        '-o-transform': transform,
+        '-ms-transform': transform,
+        'transform': transform
+      });
+      this.setPosition(this._startPosition);
+      return this.move(tankAngle);
+    };
+
+    /*
+    		# set start coordinate
+    		# @param {number} position.left X coordinate of tank
+    		# @param {number} position.top Y coordinate of tank
+    */
+
+
+    BulletView.prototype.setPosition = function(position) {
       this.position = {
         left: coord.left - 10,
         top: coord.top - this.model.height
@@ -517,19 +577,19 @@ var __hasProp = {}.hasOwnProperty,
 
 
     BulletView.prototype.move = function(angle) {
-      var length, randomCoord, signLeft, signRight, _ref, _ref1,
+      var length, randomCoord, signX, signY, _ref, _ref1,
         _this = this;
       length = this.model.getLength();
       randomCoord = this.model.getRandomCoord();
-      signLeft = (_ref = Math.round(Math.random() * 100) % 2) != null ? _ref : {
+      signX = (_ref = Math.round(Math.random() * 100) % 2) != null ? _ref : {
         1: -1
       };
-      signRight = (_ref1 = Math.round(Math.random() * 100) % 2) != null ? _ref1 : {
+      signY = (_ref1 = Math.round(Math.random() * 100) % 2) != null ? _ref1 : {
         1: -1
       };
       this.position = {
-        left: this.position.left + length * Math.cos(angle + Math.PI) + (signLeft * Math.random() * randomCoord),
-        top: this.position.top + length * Math.sin(angle + Math.PI) + (signRight * Math.random() * randomCoord)
+        left: this.position.left + length * Math.cos(angle + Math.PI) + (signX * Math.random() * randomCoord),
+        top: this.position.top + length * Math.sin(angle + Math.PI) + (signY * Math.random() * randomCoord)
       };
       return this.$bullet.animate(this.position, this.model.getSpeed(), 'linear', function() {
         return _this.explode();
@@ -561,6 +621,12 @@ var __hasProp = {}.hasOwnProperty,
 
     __extends(TankView, _super);
 
+    /*
+    		# object with key codes
+    		# @var {object}
+    */
+
+
     TankView.prototype.keyMap = {
       left: 37,
       right: 39,
@@ -581,15 +647,44 @@ var __hasProp = {}.hasOwnProperty,
         this.error('incorrect model in TankView.constructor');
         this;
       }
+      /*
+      			# model of tank
+      			# @var {TankModel}
+      */
+
       this.model = model;
+      /*
+      			# time of last shot
+      			# @var {number}
+      */
+
+      this.lastShotTime = (new Date()).getTime();
+      /*
+      			# object with pressed keys
+      			# @var {object}
+      */
+
+      this._pressed = {};
+      /*
+      			# array of bullets
+      			# @var {Array}
+      */
+
+      this._bullets = [];
+      this.init();
+    }
+
+    /*
+    		# tank view init
+    */
+
+
+    TankView.prototype.init = function() {
       this.$tank = $("<div class='" + CLASSES.tank.main + "'></div>").appendTo(this._$domContainer);
       this.setPosition(this.$tank.position());
-      this.lastShotTime = (new Date()).getTime();
-      this._pressed = {};
       this._bindEvents();
-      this._bullets = [];
-      this.update();
-    }
+      return this.update();
+    };
 
     /*
     		# tank destroy
@@ -601,6 +696,11 @@ var __hasProp = {}.hasOwnProperty,
       this._unbindEvents();
       return this.clearShots();
     };
+
+    /*
+    		# set tank position
+    */
+
 
     TankView.prototype.setPosition = function(position) {
       var angle, height, width;
@@ -625,7 +725,7 @@ var __hasProp = {}.hasOwnProperty,
 
     /*
     		# move tank
-    		# @param {string} directionX
+    		# @param {string} direction
     */
 
 
@@ -687,23 +787,13 @@ var __hasProp = {}.hasOwnProperty,
 
 
     TankView.prototype.rotate = function(angle) {
-      var cos, sin;
-      if (!$.browser.msie) {
-        this.$tank.css({
-          '-webkit-transform': "rotate(" + angle + "deg)",
-          '-moz-transform': "rotate(" + angle + "deg)",
-          '-o-transform': "rotate(" + angle + "deg)",
-          '-ms-transform': "rotate(" + angle + "deg)",
-          'transform': "rotate(" + angle + "deg)"
-        });
-      } else {
-        cos = Math.cos(angle);
-        sin = Math.sin(angle);
-        this.$tank.css({
-          filter: 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')',
-          '-ms-filter': 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')'
-        });
-      }
+      this.$tank.css({
+        '-webkit-transform': "rotate(" + angle + "deg)",
+        '-moz-transform': "rotate(" + angle + "deg)",
+        '-o-transform': "rotate(" + angle + "deg)",
+        '-ms-transform': "rotate(" + angle + "deg)",
+        'transform': "rotate(" + angle + "deg)"
+      });
       return $(document.body).trigger('tank.rotate');
     };
 

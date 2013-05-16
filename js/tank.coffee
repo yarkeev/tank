@@ -323,13 +323,32 @@
 			@_length = DEFAULT_BULLET_LENGTH
 
 			###
-			#
+			# random length
+			# @var {number}
 			###
 			@_randomLength = DEFAULT_BULLET_LENGTH_RANDOM
+
+			###
+			# random coord
+			# @var {number}
+			###
 			@_randomCoord = DEFAULT_BULLET_COORD_RANDOM
+
+			###
+			# bullet width
+			# @var {number}
+			###
 			@width = DEFAULT_BULLET_WIDTH
+
+			###
+			# bullet height
+			# @var {number}
+			###
 			@height = DEFAULT_BULLET_HEIGHT
 
+		###
+		# destroy model
+		###
 		destroy: ->
 
 
@@ -361,28 +380,48 @@
 
 		###
 		# @constructor
-		# @param {number} coord.left X coordinate of tank
-		# @param {number} coord.top Y coordinate of tank
+		# @param {number} startPosition.left X coordinate of tank
+		# @param {number} startPosition.top Y coordinate of tank
 		# @param {BulletModel} model model of ballet
 		# @param {TankModel} tankModel model of tank 
 		###
-		constructor: (coord, model, tankModel) ->
+		constructor: (startPosition, model, tankModel) ->
 			super
-			@model = model
-			@tankModel = tankModel
-			@_explodeTime = DEFAULT_BULLET_EXPLODE_TIME
-			@$bullet = $("<div class='#{CLASSES.bullet.main}'></div>").appendTo @_$domContainer
-			
-			angle = (@tankModel.getAngle() * 180 / Math.PI) - 90
-			@$bullet.css
-					'-webkit-transform': "rotate(#{angle}deg)"
-					'-moz-transform': "rotate(#{angle}deg)"
-					'-o-transform': "rotate(#{angle}deg)"
-					'-ms-transform': "rotate(#{angle}deg)"
-					'transform': "rotate(#{angle}deg)"
 
-			@setCoord coord
-			@move @tankModel.getAngle()
+			###
+			# model of bullet
+			# @var {BulletModel}
+			###
+			@model = model
+
+			###
+			# model of tank
+			# @var {TankModel}
+			###
+			@tankModel = tankModel
+
+			###
+			# time of explosion
+			# @var {number}
+			###
+			@_explodeTime = DEFAULT_BULLET_EXPLODE_TIME
+
+			###
+			# dom element of bullet
+			# @var {jQuery}
+			###
+			@$bullet = $("<div class='#{CLASSES.bullet.main}'></div>").appendTo @_$domContainer
+
+			###
+			# start bullet position
+			# @var {object}
+			###
+			@_startPosition = $.extend
+				left: 0
+				top: 0
+			, startPosition
+
+			@init()
 
 		###
 		# bullet destroy
@@ -390,14 +429,30 @@
 		destroy: ->
 			@$bullet.remove()
 
+		###
+		# init bullet
+		###
+		init: ->
+			tankAngle = @tankModel.getAngle()
+			bulletAngle = (tankAngle * 180 / Math.PI) - 90
+			transform = "rotate(#{bulletAngle}deg)"
+			@$bullet.css
+					'-webkit-transform': transform
+					'-moz-transform': transform
+					'-o-transform': transform
+					'-ms-transform': transform
+					'transform': transform
+
+			@setPosition @_startPosition
+
+			@move tankAngle
 
 		###
 		# set start coordinate
-		# @param {number} coord.left X coordinate of tank
-		# @param {number} coord.top Y coordinate of tank
-		# @param {string} direction current tank direction
+		# @param {number} position.left X coordinate of tank
+		# @param {number} position.top Y coordinate of tank
 		###
-		setCoord: (coord, direction) ->
+		setPosition: (position) ->
 			@position =
 				left: coord.left - 10
 				top: coord.top - @model.height
@@ -411,11 +466,11 @@
 		move: (angle) ->
 			length = @model.getLength()
 			randomCoord = @model.getRandomCoord()
-			signLeft = (Math.round(Math.random() * 100) % 2) ? 1 : -1
-			signRight = (Math.round(Math.random() * 100) % 2) ? 1 : -1
+			signX = (Math.round(Math.random() * 100) % 2) ? 1 : -1
+			signY = (Math.round(Math.random() * 100) % 2) ? 1 : -1
 			@position = 
-				left: @position.left + length * Math.cos(angle + Math.PI) + (signLeft * Math.random() * randomCoord)
-				top: @position.top + length * Math.sin(angle + Math.PI) + (signRight * Math.random() * randomCoord)
+				left: @position.left + length * Math.cos(angle + Math.PI) + (signX * Math.random() * randomCoord)
+				top: @position.top + length * Math.sin(angle + Math.PI) + (signY * Math.random() * randomCoord)
 			@$bullet.animate @position, @model.getSpeed(), 'linear', () =>
 				@explode()
 
@@ -434,6 +489,10 @@
 	###
 	class TankView extends View
 
+		###
+		# object with key codes
+		# @var {object}
+		###
 		keyMap:
 			left: 37
 			right: 39
@@ -452,14 +511,39 @@
 				@error 'incorrect model in TankView.constructor'
 				@
 
+			###
+			# model of tank
+			# @var {TankModel}
+			###
 			@model = model
-			@$tank = $("<div class='#{CLASSES.tank.main}'></div>").appendTo @_$domContainer
-			@setPosition @$tank.position()
+			
+			###
+			# time of last shot
+			# @var {number}
+			###
 			@lastShotTime = (new Date()).getTime()
+
+			###
+			# object with pressed keys
+			# @var {object}
+			###
 			@_pressed = {}
-			@_bindEvents()
+
+			###
+			# array of bullets
+			# @var {Array}
+			###
 			@_bullets = []
 
+			@init()
+
+		###
+		# tank view init
+		###
+		init: ->
+			@$tank = $("<div class='#{CLASSES.tank.main}'></div>").appendTo @_$domContainer
+			@setPosition @$tank.position()
+			@_bindEvents()
 			@update()
 
 		###
@@ -471,6 +555,9 @@
 			@_unbindEvents()
 			@clearShots()
 
+		###
+		# set tank position
+		###
 		setPosition: (position) ->
 			position = $.extend
 				left: 0
@@ -494,7 +581,7 @@
 
 		###
 		# move tank
-		# @param {string} directionX
+		# @param {string} direction
 		###
 		move: (direction) ->
 			speed = @model.getSpeed()
@@ -535,20 +622,12 @@
 		# @param {number} angle
 		###
 		rotate: (angle) ->
-			if !$.browser.msie
-				@$tank.css
-					'-webkit-transform': "rotate(#{angle}deg)"
-					'-moz-transform': "rotate(#{angle}deg)"
-					'-o-transform': "rotate(#{angle}deg)"
-					'-ms-transform': "rotate(#{angle}deg)"
-					'transform': "rotate(#{angle}deg)"
-			else
-				cos = Math.cos angle
-				sin = Math.sin angle
-				@$tank.css
-					filter: 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')'
-					'-ms-filter': 'progid:DXImageTransform.Microsoft.Matrix(sizingMethod="auto expand", M11 = ' + cos + ', M12 = ' + (-sin) + ', M21 = ' + sin + ', M22 = ' + cos + ')'
-
+			@$tank.css
+				'-webkit-transform': "rotate(#{angle}deg)"
+				'-moz-transform': "rotate(#{angle}deg)"
+				'-o-transform': "rotate(#{angle}deg)"
+				'-ms-transform': "rotate(#{angle}deg)"
+				'transform': "rotate(#{angle}deg)"
 			$(document.body).trigger 'tank.rotate'
 
 		###
