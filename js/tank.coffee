@@ -454,8 +454,8 @@
 		###
 		setPosition: (position) ->
 			@position =
-				left: coord.left - 10
-				top: coord.top - @model.height
+				left: position.left - 10
+				top: position.top - @model.height
 
 			@$bullet.css @position
 

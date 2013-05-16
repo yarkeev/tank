@@ -564,8 +564,8 @@ var __hasProp = {}.hasOwnProperty,
 
     BulletView.prototype.setPosition = function(position) {
       this.position = {
-        left: coord.left - 10,
-        top: coord.top - this.model.height
+        left: position.left - 10,
+        top: position.top - this.model.height
       };
       return this.$bullet.css(this.position);
     };
