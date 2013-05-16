@@ -531,6 +531,7 @@ var __hasProp = {}.hasOwnProperty,
       var _this = this;
       this.$bullet.addClass('explode');
       return setTimeout(function() {
+        console.log('hole');
         return _this.$bullet.addClass('hole');
       }, this._explodeTime);
     };

@@ -416,6 +416,7 @@
 		explode: ->
 			@$bullet.addClass 'explode'
 			setTimeout () =>
+				console.log 'hole'
 				@$bullet.addClass 'hole'
 			, @_explodeTime
 
