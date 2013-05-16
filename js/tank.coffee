@@ -411,9 +411,11 @@
 		move: (angle) ->
 			length = @model.getLength()
 			randomCoord = @model.getRandomCoord()
+			signLeft = (Math.round(Math.random() * 100) % 2) ? 1 : -1
+			signRight = (Math.round(Math.random() * 100) % 2) ? 1 : -1
 			@position = 
-				left: @position.left + length * Math.cos(angle + Math.PI) + (Math.random() * randomCoord)
-				top: @position.top + length * Math.sin(angle + Math.PI) + (Math.random() * randomCoord)
+				left: @position.left + length * Math.cos(angle + Math.PI) + (signLeft * Math.random() * randomCoord)
+				top: @position.top + length * Math.sin(angle + Math.PI) + (signRight * Math.random() * randomCoord)
 			@$bullet.animate @position, @model.getSpeed(), 'linear', () =>
 				@explode()
 

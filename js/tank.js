@@ -517,13 +517,19 @@ var __hasProp = {}.hasOwnProperty,
 
 
     BulletView.prototype.move = function(angle) {
-      var length, randomCoord,
+      var length, randomCoord, signLeft, signRight, _ref, _ref1,
         _this = this;
       length = this.model.getLength();
       randomCoord = this.model.getRandomCoord();
+      signLeft = (_ref = Math.round(Math.random() * 100) % 2) != null ? _ref : {
+        1: -1
+      };
+      signRight = (_ref1 = Math.round(Math.random() * 100) % 2) != null ? _ref1 : {
+        1: -1
+      };
       this.position = {
-        left: this.position.left + length * Math.cos(angle + Math.PI) + (Math.random() * randomCoord),
-        top: this.position.top + length * Math.sin(angle + Math.PI) + (Math.random() * randomCoord)
+        left: this.position.left + length * Math.cos(angle + Math.PI) + (signLeft * Math.random() * randomCoord),
+        top: this.position.top + length * Math.sin(angle + Math.PI) + (signRight * Math.random() * randomCoord)
       };
       return this.$bullet.animate(this.position, this.model.getSpeed(), 'linear', function() {
         return _this.explode();
