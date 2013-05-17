@@ -596,7 +596,7 @@
 				left: @position.left + sign * speed * Math.cos angle
 				top: @position.top + sign * speed * Math.sin angle
 
-			$(document.body).trigger 'tank.move'
+			@_$domContainer.trigger 'tank.move'
 
 		###
 		# shot (create bullet)
@@ -604,6 +604,9 @@
 		shot: ->
 			bulletModel = new BulletModel
 			bulletView = new BulletView @center, bulletModel, @model
+
+			if @_bullets.length == 0
+				@_$domContainer.trigger 'tank.firstShot'
 
 			@_bullets.push
 				model: bulletModel
@@ -628,7 +631,7 @@
 				'-o-transform': "rotate(#{angle}deg)"
 				'-ms-transform': "rotate(#{angle}deg)"
 				'transform': "rotate(#{angle}deg)"
-			$(document.body).trigger 'tank.rotate'
+			@_$domContainer.trigger 'tank.rotate'
 
 		###
 		# update view

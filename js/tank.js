@@ -743,7 +743,7 @@ var __hasProp = {}.hasOwnProperty,
         left: this.position.left + sign * speed * Math.cos(angle),
         top: this.position.top + sign * speed * Math.sin(angle)
       });
-      return $(document.body).trigger('tank.move');
+      return this._$domContainer.trigger('tank.move');
     };
 
     /*
@@ -755,6 +755,9 @@ var __hasProp = {}.hasOwnProperty,
       var bulletModel, bulletView;
       bulletModel = new BulletModel;
       bulletView = new BulletView(this.center, bulletModel, this.model);
+      if (this._bullets.length === 0) {
+        this._$domContainer.trigger('tank.firstShot');
+      }
       return this._bullets.push({
         model: bulletModel,
         view: bulletView
@@ -794,7 +797,7 @@ var __hasProp = {}.hasOwnProperty,
         '-ms-transform': "rotate(" + angle + "deg)",
         'transform': "rotate(" + angle + "deg)"
       });
-      return $(document.body).trigger('tank.rotate');
+      return this._$domContainer.trigger('tank.rotate');
     };
 
     /*
