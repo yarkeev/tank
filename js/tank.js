@@ -671,6 +671,12 @@ var __hasProp = {}.hasOwnProperty,
       */
 
       this._bullets = [];
+      /*
+      			# flag of already tank moved
+      			# @var {number}
+      */
+
+      this._alreadyMoved = false;
       this.init();
     }
 
@@ -743,7 +749,11 @@ var __hasProp = {}.hasOwnProperty,
         left: this.position.left + sign * speed * Math.cos(angle),
         top: this.position.top + sign * speed * Math.sin(angle)
       });
-      return this._$domContainer.trigger('tank.move');
+      this._$domContainer.trigger('tank.move');
+      if (!this._alreadyMoved) {
+        this._$domContainer.trigger('tank.firstMove');
+        return this._alreadyMoved = true;
+      }
     };
 
     /*

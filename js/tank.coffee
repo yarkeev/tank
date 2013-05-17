@@ -535,6 +535,12 @@
 			###
 			@_bullets = []
 
+			###
+			# flag of already tank moved
+			# @var {number}
+			###
+			@_alreadyMoved = false
+
 			@init()
 
 		###
@@ -597,6 +603,10 @@
 				top: @position.top + sign * speed * Math.sin angle
 
 			@_$domContainer.trigger 'tank.move'
+
+			if !@_alreadyMoved
+				@_$domContainer.trigger 'tank.firstMove'
+				@_alreadyMoved = true
 
 		###
 		# shot (create bullet)
