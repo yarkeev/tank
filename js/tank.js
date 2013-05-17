@@ -12,12 +12,12 @@ var __hasProp = {}.hasOwnProperty,
   DEFAULT_BULLET_SPEED = 300;
   DEFAULT_BULLET_LENGTH = 250;
   DEFAULT_BULLET_LENGTH_RANDOM = 50;
-  DEFAULT_BULLET_COORD_RANDOM = 50;
+  DEFAULT_BULLET_COORD_RANDOM = 20;
   DEFAULT_TANK_WIDTH = 75;
   DEFAULT_TANK_HEIGHT = 150;
   DEFAULT_BULLET_EXPLODE_TIME = 500;
   DEFAULT_ANGLE_UPDATE_DELAY = 100;
-  DEBUG = true;
+  DEBUG = false;
   DOM_CONTAINER = null;
   CLASSES = {
     tank: {
@@ -167,7 +167,6 @@ var __hasProp = {}.hasOwnProperty,
         handlers = this._subscribers[id];
         for (key = _i = 0, _len = handlers.length; _i < _len; key = ++_i) {
           handler = handlers[key];
-          console.log(handler);
           if (handler === callback) {
             handlers[key] = null;
           }
@@ -577,16 +576,12 @@ var __hasProp = {}.hasOwnProperty,
 
 
     BulletView.prototype.move = function(angle) {
-      var length, randomCoord, signX, signY, _ref, _ref1,
+      var length, randomCoord, signX, signY,
         _this = this;
       length = this.model.getLength();
       randomCoord = this.model.getRandomCoord();
-      signX = (_ref = Math.round(Math.random() * 100) % 2) != null ? _ref : {
-        1: -1
-      };
-      signY = (_ref1 = Math.round(Math.random() * 100) % 2) != null ? _ref1 : {
-        1: -1
-      };
+      signX = Math.round(Math.random() * 100) % 2 ? 1 : -1;
+      signY = Math.round(Math.random() * 100) % 2 ? 1 : -1;
       this.position = {
         left: this.position.left + length * Math.cos(angle + Math.PI) + (signX * Math.random() * randomCoord),
         top: this.position.top + length * Math.sin(angle + Math.PI) + (signY * Math.random() * randomCoord)
@@ -605,7 +600,6 @@ var __hasProp = {}.hasOwnProperty,
       var _this = this;
       this.$bullet.addClass('explode');
       return setTimeout(function() {
-        console.log('hole');
         return _this.$bullet.addClass('hole');
       }, this._explodeTime);
     };
@@ -807,7 +801,11 @@ var __hasProp = {}.hasOwnProperty,
         '-ms-transform': "rotate(" + angle + "deg)",
         'transform': "rotate(" + angle + "deg)"
       });
-      return this._$domContainer.trigger('tank.rotate');
+      this._$domContainer.trigger('tank.rotate');
+      if (!this._alreadyMoved) {
+        this._$domContainer.trigger('tank.firstMove');
+        return this._alreadyMoved = true;
+      }
     };
 
     /*

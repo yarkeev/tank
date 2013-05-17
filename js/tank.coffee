@@ -15,7 +15,7 @@
 
 	DEFAULT_BULLET_LENGTH_RANDOM = 50
 
-	DEFAULT_BULLET_COORD_RANDOM = 50
+	DEFAULT_BULLET_COORD_RANDOM = 20
 
 	DEFAULT_TANK_WIDTH = 75
 
@@ -25,7 +25,7 @@
 
 	DEFAULT_ANGLE_UPDATE_DELAY = 100
 
-	DEBUG = true
+	DEBUG = false
 
 	DOM_CONTAINER = null
 
@@ -146,7 +146,6 @@
 			else
 				handlers = @_subscribers[id]
 				for handler, key in handlers
-					console.log handler
 					if handler == callback
 						handlers[key] = null
 			@
@@ -466,8 +465,8 @@
 		move: (angle) ->
 			length = @model.getLength()
 			randomCoord = @model.getRandomCoord()
-			signX = (Math.round(Math.random() * 100) % 2) ? 1 : -1
-			signY = (Math.round(Math.random() * 100) % 2) ? 1 : -1
+			signX = if Math.round(Math.random() * 100) % 2 then 1 else -1
+			signY = if Math.round(Math.random() * 100) % 2 then 1 else -1
 			@position = 
 				left: @position.left + length * Math.cos(angle + Math.PI) + (signX * Math.random() * randomCoord)
 				top: @position.top + length * Math.sin(angle + Math.PI) + (signY * Math.random() * randomCoord)
@@ -480,7 +479,6 @@
 		explode: ->
 			@$bullet.addClass 'explode'
 			setTimeout () =>
-				console.log 'hole'
 				@$bullet.addClass 'hole'
 			, @_explodeTime
 
@@ -642,6 +640,10 @@
 				'-ms-transform': "rotate(#{angle}deg)"
 				'transform': "rotate(#{angle}deg)"
 			@_$domContainer.trigger 'tank.rotate'
+
+			if !@_alreadyMoved
+				@_$domContainer.trigger 'tank.firstMove'
+				@_alreadyMoved = true
 
 		###
 		# update view
