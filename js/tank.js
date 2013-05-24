@@ -787,7 +787,10 @@ var __hasProp = {}.hasOwnProperty,
         '-o-transform': "rotate(" + angle + "deg)",
         '-ms-transform': "rotate(" + angle + "deg)",
         'transform': "rotate(" + angle + "deg)"
-      }).offset(this.center).appendTo(this._$domContainer);
+      }).offset({
+        left: this.center.left - 30,
+        top: this.center.top - 70
+      }).appendTo(this._$domContainer);
     };
 
     /*
