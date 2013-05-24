@@ -640,8 +640,8 @@
 				'-o-transform': "rotate(#{angle}deg)"
 				'-ms-transform': "rotate(#{angle}deg)"
 				'transform': "rotate(#{angle}deg)"
-			.offset @center
-			.appendTo @_$domContainer
+			.offset(@center)
+			.appendTo(@_$domContainer)
 
 		###
 		# destroy shots
