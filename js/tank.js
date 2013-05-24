@@ -788,8 +788,8 @@ var __hasProp = {}.hasOwnProperty,
         '-ms-transform': "rotate(" + angle + "deg)",
         'transform': "rotate(" + angle + "deg)"
       }).offset({
-        left: this.center.left - 30,
-        top: this.center.top - 70
+        left: this.center.left - 40,
+        top: this.center.top + 70
       }).appendTo(this._$domContainer);
     };
 
