@@ -29,6 +29,10 @@
 
 	DOM_CONTAINER = null
 
+	WINDOW_WIDTH = $(window).width()
+
+	WINDOW_HEIGHT = $(window).height()
+
 	CLASSES = 
 		tank:
 			main: 'b-tank'
@@ -567,6 +571,9 @@
 				left: 0
 				top: 0
 			, position
+
+			if position.left > WINDOW_WIDTH || position.left < 0 || position.top < 0 || position.top > WINDOW_HEIGHT
+				return
 
 			angle = @model.getAngle()
 			width = @model.width

@@ -4,7 +4,7 @@ var __hasProp = {}.hasOwnProperty,
 
 (function(window, $) {
   'use strict';
-  var Base, BulletModel, BulletView, CLASSES, DEBUG, DEFAULT_ANGLE_SPEED, DEFAULT_ANGLE_UPDATE_DELAY, DEFAULT_BULLET_COORD_RANDOM, DEFAULT_BULLET_EXPLODE_TIME, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_LENGTH, DEFAULT_BULLET_LENGTH_RANDOM, DEFAULT_BULLET_SPEED, DEFAULT_BULLET_WIDTH, DEFAULT_SPEED, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, Observer, Tank, TankModel, TankView, View, requestAnimFrame;
+  var Base, BulletModel, BulletView, CLASSES, DEBUG, DEFAULT_ANGLE_SPEED, DEFAULT_ANGLE_UPDATE_DELAY, DEFAULT_BULLET_COORD_RANDOM, DEFAULT_BULLET_EXPLODE_TIME, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_LENGTH, DEFAULT_BULLET_LENGTH_RANDOM, DEFAULT_BULLET_SPEED, DEFAULT_BULLET_WIDTH, DEFAULT_SPEED, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, Observer, Tank, TankModel, TankView, View, WINDOW_HEIGHT, WINDOW_WIDTH, requestAnimFrame;
   DEFAULT_SPEED = 5;
   DEFAULT_ANGLE_SPEED = 2;
   DEFAULT_BULLET_WIDTH = 2;
@@ -19,6 +19,8 @@ var __hasProp = {}.hasOwnProperty,
   DEFAULT_ANGLE_UPDATE_DELAY = 100;
   DEBUG = false;
   DOM_CONTAINER = null;
+  WINDOW_WIDTH = $(window).width();
+  WINDOW_HEIGHT = $(window).height();
   CLASSES = {
     tank: {
       main: 'b-tank'
@@ -708,6 +710,9 @@ var __hasProp = {}.hasOwnProperty,
         left: 0,
         top: 0
       }, position);
+      if (position.left > WINDOW_WIDTH || position.left < 0 || position.top < 0 || position.top > WINDOW_HEIGHT) {
+        return;
+      }
       angle = this.model.getAngle();
       width = this.model.width;
       height = this.model.height;
