@@ -748,6 +748,7 @@ var __hasProp = {}.hasOwnProperty,
         left: this.position.left + sign * speed * Math.cos(angle),
         top: this.position.top + sign * speed * Math.sin(angle)
       });
+      this.createTrail();
       this._$domContainer.trigger('tank.move');
       if (!this._alreadyMoved) {
         this._$domContainer.trigger('tank.firstMove');
@@ -771,6 +772,21 @@ var __hasProp = {}.hasOwnProperty,
         model: bulletModel,
         view: bulletView
       });
+    };
+
+    TankView.prototype.createTrail = function() {
+      var angle;
+      angle = this.model.getAngle();
+      return $('<div></div>').css({
+        width: 60,
+        height: 3,
+        background: '#000',
+        '-webkit-transform': "rotate(" + angle + "deg)",
+        '-moz-transform': "rotate(" + angle + "deg)",
+        '-o-transform': "rotate(" + angle + "deg)",
+        '-ms-transform': "rotate(" + angle + "deg)",
+        'transform': "rotate(" + angle + "deg)"
+      }).offset(this.center.appendTo(this._$domContainer));
     };
 
     /*

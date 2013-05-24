@@ -607,6 +607,8 @@
 				left: @position.left + sign * speed * Math.cos angle
 				top: @position.top + sign * speed * Math.sin angle
 
+			@createTrail();
+
 			@_$domContainer.trigger 'tank.move'
 
 			if !@_alreadyMoved
@@ -626,6 +628,20 @@
 			@_bullets.push
 				model: bulletModel
 				view: bulletView
+
+		createTrail: ->
+			angle = @model.getAngle()
+			$('<div></div>').css
+				width: 60
+				height: 3
+				background: '#000'
+				'-webkit-transform': "rotate(#{angle}deg)"
+				'-moz-transform': "rotate(#{angle}deg)"
+				'-o-transform': "rotate(#{angle}deg)"
+				'-ms-transform': "rotate(#{angle}deg)"
+				'transform': "rotate(#{angle}deg)"
+			.offset @center
+			.appendTo @_$domContainer
 
 		###
 		# destroy shots
