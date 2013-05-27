@@ -605,8 +605,8 @@
 				sign = 1
 
 			@setPosition
-				left: @center.left + sign * speed * Math.cos angle
-				top: @center.top + sign * speed * Math.sin angle
+				left: @position.left + sign * speed * Math.cos angle
+				top: @position.top + sign * speed * Math.sin angle
 
 			@createTrail();
 
@@ -643,8 +643,8 @@
 				'-ms-transform': "rotate(#{angle}deg)"
 				'transform': "rotate(#{angle}deg)"
 			.offset({
-				left: @position.left
-				top: @position.top
+				left: @center.left
+				top: @center.top
 			})
 			.appendTo(@_$domContainer)
 

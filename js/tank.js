@@ -746,8 +746,8 @@ var __hasProp = {}.hasOwnProperty,
         sign = 1;
       }
       this.setPosition({
-        left: this.center.left + sign * speed * Math.cos(angle),
-        top: this.center.top + sign * speed * Math.sin(angle)
+        left: this.position.left + sign * speed * Math.cos(angle),
+        top: this.position.top + sign * speed * Math.sin(angle)
       });
       this.createTrail();
       this._$domContainer.trigger('tank.move');
@@ -789,8 +789,8 @@ var __hasProp = {}.hasOwnProperty,
         '-ms-transform': "rotate(" + angle + "deg)",
         'transform': "rotate(" + angle + "deg)"
       }).offset({
-        left: this.position.left,
-        top: this.position.top
+        left: this.center.left,
+        top: this.center.top
       }).appendTo(this._$domContainer);
     };
 
