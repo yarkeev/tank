@@ -630,7 +630,8 @@
 				view: bulletView
 
 		createTrail: ->
-			angle = (@model.getAngle() * 180 / Math.PI) - 90
+			# angle = (@model.getAngle() * 180 / Math.PI) - 90
+			angle = @model.getAngle() + Math.PI
 			height = @model.height
 			$('<div></div>').css
 				width: 60
@@ -643,8 +644,8 @@
 				'-ms-transform': "rotate(#{angle}deg)"
 				'transform': "rotate(#{angle}deg)"
 			.offset({
-				left: @position.left + height * Math.sin(@model.getAngle()),
-				top: @position.top + height * Math.cos(@model.getAngle())
+				left: @position.left + height * Math.cos(angle),
+				top: @position.top + height * Math.sin(angle)
 			})
 			.appendTo(@_$domContainer)
 

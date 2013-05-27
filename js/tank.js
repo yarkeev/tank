@@ -776,7 +776,7 @@ var __hasProp = {}.hasOwnProperty,
 
     TankView.prototype.createTrail = function() {
       var angle, height;
-      angle = (this.model.getAngle() * 180 / Math.PI) - 90;
+      angle = this.model.getAngle() + Math.PI;
       height = this.model.height;
       return $('<div></div>').css({
         width: 60,
@@ -789,8 +789,8 @@ var __hasProp = {}.hasOwnProperty,
         '-ms-transform': "rotate(" + angle + "deg)",
         'transform': "rotate(" + angle + "deg)"
       }).offset({
-        left: this.position.left + height * Math.sin(this.model.getAngle()),
-        top: this.position.top + height * Math.cos(this.model.getAngle())
+        left: this.position.left + height * Math.cos(angle),
+        top: this.position.top + height * Math.sin(angle)
       }).appendTo(this._$domContainer);
     };
 
