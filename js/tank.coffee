@@ -484,6 +484,13 @@
 			@$bullet.animate @position, @model.getSpeed(), 'linear', () =>
 				@explode()
 
+		findExplodeElement: ($el) ->
+			$children = $el.children()
+			if $children.length
+				@findExplodeElement $children
+			else
+				$el
+
 		###
 		# explode
 		###
@@ -495,7 +502,7 @@
 			scrollTop = $(window).scrollTop()
 			el = document.elementFromPoint(@position.left, @position.top + scrollTop)
 			if el != @_$domContainer.get(0)
-				$(el).fadeOut TIME_OF_DESTROY_ELEMENT
+				@findExplodeElement($(el)).fadeOut TIME_OF_DESTROY_ELEMENT
 
 	###
 	# View of tank

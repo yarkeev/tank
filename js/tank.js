@@ -597,6 +597,16 @@ var __hasProp = {}.hasOwnProperty,
       });
     };
 
+    BulletView.prototype.findExplodeElement = function($el) {
+      var $children;
+      $children = $el.children();
+      if ($children.length) {
+        return this.findExplodeElement($children);
+      } else {
+        return $el;
+      }
+    };
+
     /*
     		# explode
     */
@@ -612,7 +622,7 @@ var __hasProp = {}.hasOwnProperty,
       scrollTop = $(window).scrollTop();
       el = document.elementFromPoint(this.position.left, this.position.top + scrollTop);
       if (el !== this._$domContainer.get(0)) {
-        return $(el).fadeOut(TIME_OF_DESTROY_ELEMENT);
+        return this.findExplodeElement($(el)).fadeOut(TIME_OF_DESTROY_ELEMENT);
       }
     };
 
