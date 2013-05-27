@@ -782,7 +782,6 @@ var __hasProp = {}.hasOwnProperty,
       return $("<div class='" + CLASSES.tank.trail + "'></div>").css({
         width: this.model.width,
         height: this.model.height + 3,
-        background: '#000',
         position: 'fixed',
         '-webkit-transform': "rotate(" + angle + "deg)",
         '-moz-transform': "rotate(" + angle + "deg)",

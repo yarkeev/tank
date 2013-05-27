@@ -636,7 +636,6 @@
 			$("<div class='#{CLASSES.tank.trail}'></div>").css
 				width: @model.width
 				height: @model.height + 3
-				background: '#000'
 				position: 'fixed'
 				'-webkit-transform': "rotate(#{angle}deg)"
 				'-moz-transform': "rotate(#{angle}deg)"
