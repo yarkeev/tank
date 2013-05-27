@@ -494,7 +494,8 @@
 			, @_explodeTime
 			scrollTop = $(window).scrollTop()
 			el = document.elementFromPoint(@position.left, @position.top + scrollTop)
-			$(el).fadeOut TIME_OF_DESTROY_ELEMENT
+			if el != @_$domContainer.get(0)
+				$(el).fadeOut TIME_OF_DESTROY_ELEMENT
 
 	###
 	# View of tank
