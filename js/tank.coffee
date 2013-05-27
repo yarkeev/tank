@@ -33,6 +33,8 @@
 
 	WINDOW_HEIGHT = $(window).height()
 
+	TIME_OF_LIVE_TRAIL = 1000
+
 	CLASSES = 
 		tank:
 			main: 'b-tank'
@@ -651,7 +653,7 @@
 			setTimeout () =>
 				$trail.fadeOut () =>
 					$trail.remove()
-			, 300
+			, TIME_OF_LIVE_TRAIL
 
 		###
 		# destroy shots
