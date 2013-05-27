@@ -778,6 +778,7 @@ var __hasProp = {}.hasOwnProperty,
       var angle, height;
       angle = (this.model.getAngle() * 180 / Math.PI) - 90;
       height = this.model.height;
+      console.log(Math.cos((angle * Math.PI) / 180), Math.sin((angle * Math.PI) / 180));
       return $('<div></div>').css({
         width: 60,
         height: 3,
