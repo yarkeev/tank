@@ -631,6 +631,7 @@
 
 		createTrail: ->
 			angle = (@model.getAngle() * 180 / Math.PI) - 90
+			height = @model.height
 			$('<div></div>').css
 				width: 60
 				height: 3
@@ -642,8 +643,8 @@
 				'-ms-transform': "rotate(#{angle}deg)"
 				'transform': "rotate(#{angle}deg)"
 			.offset({
-				left: @position.left,
-				top: @position.top
+				left: @position.left + height * Math.sin(angle),
+				top: @position.top + height * Math.cos(angle)
 			})
 			.appendTo(@_$domContainer)
 
