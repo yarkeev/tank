@@ -500,6 +500,7 @@
 				@$bullet.addClass 'hole'
 			, @_explodeTime
 			scrollTop = $(window).scrollTop()
+			console.log @position.left, @position.top + scrollTop
 			el = document.elementFromPoint(@position.left, @position.top + scrollTop)
 			if el != @_$domContainer.get(0)
 				@findExplodeElement($(el)).fadeOut TIME_OF_DESTROY_ELEMENT

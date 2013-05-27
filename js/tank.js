@@ -620,6 +620,7 @@ var __hasProp = {}.hasOwnProperty,
         return _this.$bullet.addClass('hole');
       }, this._explodeTime);
       scrollTop = $(window).scrollTop();
+      console.log(this.position.left, this.position.top + scrollTop);
       el = document.elementFromPoint(this.position.left, this.position.top + scrollTop);
       if (el !== this._$domContainer.get(0)) {
         return this.findExplodeElement($(el)).fadeOut(TIME_OF_DESTROY_ELEMENT);
