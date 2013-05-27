@@ -642,8 +642,8 @@
 				'-ms-transform': "rotate(#{angle}deg)"
 				'transform': "rotate(#{angle}deg)"
 			.offset({
-				left: @center.left,
-				top: @center.top
+				left: @position.left,
+				top: @position.top
 			})
 			.appendTo(@_$domContainer)
 
