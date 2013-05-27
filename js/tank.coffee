@@ -35,6 +35,8 @@
 
 	TIME_OF_LIVE_TRAIL = 1000
 
+	TIME_OF_ERASE_TRAIL = 1000
+
 	CLASSES = 
 		tank:
 			main: 'b-tank'
