@@ -643,7 +643,7 @@
 				'transform': "rotate(#{angle}deg)"
 			.offset({
 				left: @position.left,
-				top: @position.top + @model.height
+				top: @position.top
 			})
 			.appendTo(@_$domContainer)
 
