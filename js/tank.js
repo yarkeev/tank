@@ -796,7 +796,7 @@ var __hasProp = {}.hasOwnProperty,
         top: this.position.top
       }).appendTo(this._$domContainer);
       return setTimeout(function() {
-        return $trail.fadeOut(function() {
+        return $trail.fadeOut(TIME_OF_ERASE_TRAIL, function() {
           return $trail.remove();
         });
       }, TIME_OF_LIVE_TRAIL);

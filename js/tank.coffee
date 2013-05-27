@@ -653,7 +653,7 @@
 			.appendTo(@_$domContainer)
 
 			setTimeout () =>
-				$trail.fadeOut () =>
+				$trail.fadeOut TIME_OF_ERASE_TRAIL, () =>
 					$trail.remove()
 			, TIME_OF_LIVE_TRAIL
 
