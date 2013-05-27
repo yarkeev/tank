@@ -789,7 +789,7 @@ var __hasProp = {}.hasOwnProperty,
         'transform': "rotate(" + angle + "deg)"
       }).offset({
         left: this.position.left,
-        top: this.position.top
+        top: this.position.top - this.model.height
       }).appendTo(this._$domContainer);
     };
 
