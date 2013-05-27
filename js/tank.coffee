@@ -37,6 +37,8 @@
 
 	TIME_OF_ERASE_TRAIL = 1000
 
+	TIME_OF_DESTROY_ELEMENT = 300
+
 	CLASSES = 
 		tank:
 			main: 'b-tank'
@@ -491,7 +493,8 @@
 				@$bullet.addClass 'hole'
 			, @_explodeTime
 			scrollTop = $(window).scrollTop()
-			console.log(document.elementFromPoint(@position.left, @position.top + scrollTop))
+			el = document.elementFromPoint(@position.left, @position.top + scrollTop)
+			el.fadeOut TIME_OF_DESTROY_ELEMENT
 
 	###
 	# View of tank

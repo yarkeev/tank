@@ -4,7 +4,7 @@ var __hasProp = {}.hasOwnProperty,
 
 (function(window, $) {
   'use strict';
-  var Base, BulletModel, BulletView, CLASSES, DEBUG, DEFAULT_ANGLE_SPEED, DEFAULT_ANGLE_UPDATE_DELAY, DEFAULT_BULLET_COORD_RANDOM, DEFAULT_BULLET_EXPLODE_TIME, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_LENGTH, DEFAULT_BULLET_LENGTH_RANDOM, DEFAULT_BULLET_SPEED, DEFAULT_BULLET_WIDTH, DEFAULT_SPEED, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, Observer, TIME_OF_ERASE_TRAIL, TIME_OF_LIVE_TRAIL, Tank, TankModel, TankView, View, WINDOW_HEIGHT, WINDOW_WIDTH, requestAnimFrame;
+  var Base, BulletModel, BulletView, CLASSES, DEBUG, DEFAULT_ANGLE_SPEED, DEFAULT_ANGLE_UPDATE_DELAY, DEFAULT_BULLET_COORD_RANDOM, DEFAULT_BULLET_EXPLODE_TIME, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_LENGTH, DEFAULT_BULLET_LENGTH_RANDOM, DEFAULT_BULLET_SPEED, DEFAULT_BULLET_WIDTH, DEFAULT_SPEED, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, Observer, TIME_OF_DESTROY_ELEMENT, TIME_OF_ERASE_TRAIL, TIME_OF_LIVE_TRAIL, Tank, TankModel, TankView, View, WINDOW_HEIGHT, WINDOW_WIDTH, requestAnimFrame;
   DEFAULT_SPEED = 5;
   DEFAULT_ANGLE_SPEED = 2;
   DEFAULT_BULLET_WIDTH = 2;
@@ -23,6 +23,7 @@ var __hasProp = {}.hasOwnProperty,
   WINDOW_HEIGHT = $(window).height();
   TIME_OF_LIVE_TRAIL = 1000;
   TIME_OF_ERASE_TRAIL = 1000;
+  TIME_OF_DESTROY_ELEMENT = 300;
   CLASSES = {
     tank: {
       main: 'b-tank',
@@ -602,14 +603,15 @@ var __hasProp = {}.hasOwnProperty,
 
 
     BulletView.prototype.explode = function() {
-      var scrollTop,
+      var el, scrollTop,
         _this = this;
       this.$bullet.addClass('explode');
       setTimeout(function() {
         return _this.$bullet.addClass('hole');
       }, this._explodeTime);
       scrollTop = $(window).scrollTop();
-      return console.log(document.elementFromPoint(this.position.left, this.position.top + scrollTop));
+      el = document.elementFromPoint(this.position.left, this.position.top + scrollTop);
+      return el.fadeOut(TIME_OF_DESTROY_ELEMENT);
     };
 
     return BulletView;
