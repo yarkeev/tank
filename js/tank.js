@@ -789,8 +789,8 @@ var __hasProp = {}.hasOwnProperty,
         '-ms-transform': "rotate(" + angle + "deg)",
         'transform': "rotate(" + angle + "deg)"
       }).offset({
-        left: this.position.left + height * Math.cos((Math.PI / 180) * angle),
-        top: this.position.top + height * Math.sin((Math.PI / 180) * angle)
+        left: this.position.left - height * Math.cos((Math.PI / 180) * angle),
+        top: this.position.top - height * Math.sin((Math.PI / 180) * angle)
       }).appendTo(this._$domContainer);
     };
 
