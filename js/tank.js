@@ -611,7 +611,7 @@ var __hasProp = {}.hasOwnProperty,
       }, this._explodeTime);
       scrollTop = $(window).scrollTop();
       el = document.elementFromPoint(this.position.left, this.position.top + scrollTop);
-      return el.fadeOut(TIME_OF_DESTROY_ELEMENT);
+      return $(el).fadeOut(TIME_OF_DESTROY_ELEMENT);
     };
 
     return BulletView;
