@@ -790,7 +790,7 @@ var __hasProp = {}.hasOwnProperty,
         'transform': "rotate(" + angle + "deg)"
       }).offset({
         left: this.position.left,
-        top: this.position.top
+        top: this.position.top - 40
       }).appendTo(this._$domContainer);
     };
 
