@@ -776,10 +776,11 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     TankView.prototype.createTrail = function() {
-      var angle, height;
+      var $trail, angle, height,
+        _this = this;
       angle = (this.model.getAngle() * 180 / Math.PI) - 90;
       height = this.model.height;
-      return $("<div class='" + CLASSES.tank.trail + "'></div>").css({
+      $trail = $("<div class='" + CLASSES.tank.trail + "'></div>").css({
         width: this.model.width,
         height: this.model.height + 3,
         position: 'fixed',
@@ -792,6 +793,11 @@ var __hasProp = {}.hasOwnProperty,
         left: this.position.left,
         top: this.position.top
       }).appendTo(this._$domContainer);
+      return setTimeout(function() {
+        return $trail.fadeOut(function() {
+          return $trail.remove();
+        });
+      }, 300);
     };
 
     /*

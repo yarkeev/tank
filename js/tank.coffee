@@ -633,7 +633,7 @@
 		createTrail: ->
 			angle = (@model.getAngle() * 180 / Math.PI) - 90
 			height = @model.height
-			$("<div class='#{CLASSES.tank.trail}'></div>").css
+			$trail = $("<div class='#{CLASSES.tank.trail}'></div>").css
 				width: @model.width
 				height: @model.height + 3
 				position: 'fixed'
@@ -647,6 +647,11 @@
 				top: @position.top
 			})
 			.appendTo(@_$domContainer)
+
+			setTimeout () =>
+				$trail.fadeOut () =>
+					$trail.remove()
+			, 300
 
 		###
 		# destroy shots
