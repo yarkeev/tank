@@ -36,6 +36,7 @@
 	CLASSES = 
 		tank:
 			main: 'b-tank'
+			trail: 'b-tank-trail'
 		bullet:
 			main: 'b-bullet'
 
@@ -632,10 +633,9 @@
 		createTrail: ->
 			angle = (@model.getAngle() * 180 / Math.PI) - 90
 			height = @model.height
-			console.log(Math.cos((angle * Math.PI) / 180),  Math.sin((angle * Math.PI) / 180))
-			$('<div></div>').css
-				width: 60
-				height: 3
+			$("<div class='#{CLASSES.tank.trail}'></div>").css
+				width: @model.width
+				height: @model.height + 3
 				background: '#000'
 				position: 'fixed'
 				'-webkit-transform': "rotate(#{angle}deg)"
@@ -644,8 +644,8 @@
 				'-ms-transform': "rotate(#{angle}deg)"
 				'transform': "rotate(#{angle}deg)"
 			.offset({
-				left: @position.left + 60 * Math.cos((angle * Math.PI) / 180),
-				top: @position.top + 60 * Math.sin((angle * Math.PI) / 180)
+				left: @position.left
+				top: @position.top
 			})
 			.appendTo(@_$domContainer)
 

@@ -23,7 +23,8 @@ var __hasProp = {}.hasOwnProperty,
   WINDOW_HEIGHT = $(window).height();
   CLASSES = {
     tank: {
-      main: 'b-tank'
+      main: 'b-tank',
+      trail: 'b-tank-trail'
     },
     bullet: {
       main: 'b-bullet'
@@ -778,10 +779,9 @@ var __hasProp = {}.hasOwnProperty,
       var angle, height;
       angle = (this.model.getAngle() * 180 / Math.PI) - 90;
       height = this.model.height;
-      console.log(Math.cos((angle * Math.PI) / 180), Math.sin((angle * Math.PI) / 180));
-      return $('<div></div>').css({
-        width: 60,
-        height: 3,
+      return $("<div class='" + CLASSES.tank.trail + "'></div>").css({
+        width: this.model.width,
+        height: this.model.height + 3,
         background: '#000',
         position: 'fixed',
         '-webkit-transform': "rotate(" + angle + "deg)",
@@ -790,8 +790,8 @@ var __hasProp = {}.hasOwnProperty,
         '-ms-transform': "rotate(" + angle + "deg)",
         'transform': "rotate(" + angle + "deg)"
       }).offset({
-        left: this.position.left + 60 * Math.cos((angle * Math.PI) / 180),
-        top: this.position.top + 60 * Math.sin((angle * Math.PI) / 180)
+        left: this.position.left,
+        top: this.position.top
       }).appendTo(this._$domContainer);
     };
 
