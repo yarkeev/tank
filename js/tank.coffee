@@ -605,8 +605,8 @@
 				sign = 1
 
 			@setPosition
-				left: @position.left + sign * speed * Math.cos angle
-				top: @position.top + sign * speed * Math.sin angle
+				left: @center.left + sign * speed * Math.cos angle
+				top: @center.top + sign * speed * Math.sin angle
 
 			@createTrail();
 

@@ -746,8 +746,8 @@ var __hasProp = {}.hasOwnProperty,
         sign = 1;
       }
       this.setPosition({
-        left: this.position.left + sign * speed * Math.cos(angle),
-        top: this.position.top + sign * speed * Math.sin(angle)
+        left: this.center.left + sign * speed * Math.cos(angle),
+        top: this.center.top + sign * speed * Math.sin(angle)
       });
       this.createTrail();
       this._$domContainer.trigger('tank.move');
