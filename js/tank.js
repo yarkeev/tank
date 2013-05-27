@@ -602,11 +602,14 @@ var __hasProp = {}.hasOwnProperty,
 
 
     BulletView.prototype.explode = function() {
-      var _this = this;
+      var scrollTop,
+        _this = this;
       this.$bullet.addClass('explode');
-      return setTimeout(function() {
+      setTimeout(function() {
         return _this.$bullet.addClass('hole');
       }, this._explodeTime);
+      scrollTop = $(window).scrollTop();
+      return console.log(document.elementFromPoint(this.position.left, this.position.top + scrollTop));
     };
 
     return BulletView;

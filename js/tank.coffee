@@ -490,6 +490,8 @@
 			setTimeout () =>
 				@$bullet.addClass 'hole'
 			, @_explodeTime
+			scrollTop = $(window).scrollTop()
+			console.log(document.elementFromPoint(@position.left, @position.top + scrollTop))
 
 	###
 	# View of tank
