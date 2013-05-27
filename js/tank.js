@@ -776,7 +776,7 @@ var __hasProp = {}.hasOwnProperty,
 
     TankView.prototype.createTrail = function() {
       var angle;
-      angle = (this.model.getAngle() * 180 / Math.PI) + 90;
+      angle = (this.model.getAngle() * 180 / Math.PI) - 90;
       return $('<div></div>').css({
         width: 60,
         height: 3,
