@@ -630,7 +630,7 @@
 				view: bulletView
 
 		createTrail: ->
-			angle = (@model.getAngle() * 180 / Math.PI) - 90
+			angle = (@model.getAngle() * 180 / Math.PI)
 			$('<div></div>').css
 				width: 60
 				height: 3
