@@ -4,7 +4,7 @@ var __hasProp = {}.hasOwnProperty,
 
 (function(window, $) {
   'use strict';
-  var Base, BulletModel, BulletView, CLASSES, DEBUG, DEFAULT_ANGLE_SPEED, DEFAULT_ANGLE_UPDATE_DELAY, DEFAULT_BULLET_COORD_RANDOM, DEFAULT_BULLET_EXPLODE_TIME, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_LENGTH, DEFAULT_BULLET_LENGTH_RANDOM, DEFAULT_BULLET_SPEED, DEFAULT_BULLET_WIDTH, DEFAULT_SPEED, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, Observer, TIME_OF_DESTROY_ELEMENT, TIME_OF_ERASE_TRAIL, TIME_OF_LIVE_TRAIL, Tank, TankModel, TankView, View, WINDOW_HEIGHT, WINDOW_WIDTH, requestAnimFrame;
+  var Base, BulletModel, BulletView, CLASSES, DEBUG, DEFAULT_ANGLE_SPEED, DEFAULT_ANGLE_UPDATE_DELAY, DEFAULT_BULLET_COORD_RANDOM, DEFAULT_BULLET_EXPLODE_TIME, DEFAULT_BULLET_HEIGHT, DEFAULT_BULLET_LENGTH, DEFAULT_BULLET_LENGTH_RANDOM, DEFAULT_BULLET_SPEED, DEFAULT_BULLET_WIDTH, DEFAULT_SPEED, DEFAULT_TANK_HEIGHT, DEFAULT_TANK_WIDTH, DOM_CONTAINER, NetworkInterface, Observer, TIME_OF_DESTROY_ELEMENT, TIME_OF_ERASE_TRAIL, TIME_OF_LIVE_TRAIL, Tank, TankModel, TankView, View, WINDOW_HEIGHT, WINDOW_WIDTH, requestAnimFrame;
   DEFAULT_SPEED = 5;
   DEFAULT_ANGLE_SPEED = 2;
   DEFAULT_BULLET_WIDTH = 2;
@@ -209,6 +209,32 @@ var __hasProp = {}.hasOwnProperty,
     return Observer;
 
   })(Base);
+  NetworkInterface = (function(_super) {
+
+    __extends(NetworkInterface, _super);
+
+    NetworkInterface.prototype.host = 'http://localhost';
+
+    NetworkInterface.prototype.port = 8888;
+
+    function NetworkInterface() {
+      this.socket = io.connect("" + this.host + ":" + this.port);
+      this.socket.on('init', function(data) {
+        return console.log(data.sessionId);
+      });
+    }
+
+    NetworkInterface.prototype.on = function(eventId, callback) {
+      return this.socket.on(eventId, callback);
+    };
+
+    NetworkInterface.prototype.emit = function(eventId, data) {
+      return this.socket.emit(eventId, data);
+    };
+
+    return NetworkInterface;
+
+  })(Observer);
   /*
   	# class of view
   */
@@ -299,6 +325,12 @@ var __hasProp = {}.hasOwnProperty,
       */
 
       this._enabled = false;
+      /*
+      			# network interface
+      			# @var NetworkInterface
+      */
+
+      this.network = new NetworkInterface;
     }
 
     /*
@@ -738,6 +770,7 @@ var __hasProp = {}.hasOwnProperty,
       height = this.model.height;
       this.$tank.css(position);
       this.position = position;
+      this.model.network.emit('tank.move', this.position);
       this.center = {
         left: this.position.left + (width / 2) + 1 * Math.cos(angle + Math.PI),
         top: this.position.top + (height / 2) + 1 * Math.sin(angle + Math.PI)
@@ -768,7 +801,6 @@ var __hasProp = {}.hasOwnProperty,
         left: this.position.left + sign * speed * Math.cos(angle),
         top: this.position.top + sign * speed * Math.sin(angle)
       });
-      this.createTrail();
       this._$domContainer.trigger('tank.move');
       if (!this._alreadyMoved) {
         this._$domContainer.trigger('tank.firstMove');
@@ -795,8 +827,18 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     TankView.prototype.createTrail = function() {
-      var $trail, angle, height,
+      var $trail, angle, height, now,
         _this = this;
+      if (!this.lastCreateTrail) {
+        this.lastCreateTrail = new Date;
+      } else {
+        now = new Date;
+        if (now.getTime() - this.lastCreateTrail.getTime() < 500) {
+          return;
+        } else {
+          this.lastCreateTrail = now;
+        }
+      }
       angle = (this.model.getAngle() * 180 / Math.PI) - 90;
       height = this.model.height;
       $trail = $("<div class='" + CLASSES.tank.trail + "'></div>").css({

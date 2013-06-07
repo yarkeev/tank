@@ -176,6 +176,24 @@
 					handler?.apply @, args
 			@
 
+	class NetworkInterface extends Observer
+
+		host: 'http://localhost'
+
+		port: 8888
+
+		constructor: ->
+			@socket = io.connect "#{@host}:#{@port}"
+
+			@socket.on 'init', (data) ->
+				console.log data.sessionId
+
+		on: (eventId, callback) ->
+			@socket.on eventId, callback
+
+		emit: (eventId, data) ->
+			@socket.emit eventId, data
+
 	###
 	# class of view
 	###
@@ -252,6 +270,12 @@
 			# @var {boolean}
 			###
 			@_enabled = false
+
+			###
+			# network interface
+			# @var NetworkInterface
+			###
+			@network = new NetworkInterface
 
 		###
 		# Set direction of tank
@@ -599,6 +623,7 @@
 
 			@$tank.css position
 			@position = position
+			@model.network.emit 'tank.move', @position
 
 			@center =
 				left: @position.left + (width / 2) + 1 * Math.cos(angle + Math.PI)
@@ -625,7 +650,7 @@
 				left: @position.left + sign * speed * Math.cos angle
 				top: @position.top + sign * speed * Math.sin angle
 
-			@createTrail();
+			# @createTrail()
 
 			@_$domContainer.trigger 'tank.move'
 
@@ -648,6 +673,15 @@
 				view: bulletView
 
 		createTrail: ->
+			if !@lastCreateTrail
+				@lastCreateTrail = new Date
+			else
+				now = new Date
+				if now.getTime() - @lastCreateTrail.getTime() < 500
+					return
+				else
+					@lastCreateTrail = now
+
 			angle = (@model.getAngle() * 180 / Math.PI) - 90
 			height = @model.height
 			$trail = $("<div class='#{CLASSES.tank.trail}'></div>").css
