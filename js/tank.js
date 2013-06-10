@@ -213,23 +213,43 @@ var __hasProp = {}.hasOwnProperty,
 
     __extends(NetworkInterface, _super);
 
+    NetworkInterface.prototype.enableState = false;
+
     NetworkInterface.prototype.host = 'http://localhost';
 
     NetworkInterface.prototype.port = 8888;
 
     function NetworkInterface() {
-      this.socket = io.connect("" + this.host + ":" + this.port);
-      this.socket.on('init', function(data) {
-        return console.log(data.sessionId);
-      });
+      this.connect();
     }
 
+    NetworkInterface.prototype.connect = function() {
+      if (this.enableState) {
+        this.socket = io.connect("" + this.host + ":" + this.port);
+        return this.socket.on('init', function(data) {
+          return console.log(data.sessionId);
+        });
+      }
+    };
+
+    NetworkInterface.prototype.enable = function() {
+      return this.enableState = true;
+    };
+
+    NetworkInterface.prototype.disable = function() {
+      return this.enableState = false;
+    };
+
     NetworkInterface.prototype.on = function(eventId, callback) {
-      return this.socket.on(eventId, callback);
+      if (this.enableState) {
+        return this.socket.on(eventId, callback);
+      }
     };
 
     NetworkInterface.prototype.emit = function(eventId, data) {
-      return this.socket.emit(eventId, data);
+      if (this.enableState) {
+        return this.socket.emit(eventId, data);
+      }
     };
 
     return NetworkInterface;
@@ -271,6 +291,12 @@ var __hasProp = {}.hasOwnProperty,
 
     function TankModel() {
       TankModel.__super__.constructor.apply(this, arguments);
+      /*
+      			# Unique id
+      			# @var {string}
+      */
+
+      this.id = Math.random().toString(36).substr(2, 16);
       /*
       			# Current directrion
       			# @var {string}
@@ -1054,8 +1080,10 @@ var __hasProp = {}.hasOwnProperty,
       });
       return $(document.body).on('tank.enable', function(event) {
         return _this.model.enable();
-      }).on('tank.destroy', function(event) {
-        return _this.destroy();
+      }).on('tank.destroy', function(event, data) {
+        if (data.id && data.id === _this.model.id) {
+          return _this.destroy();
+        }
       }).on('tank.setPosition', function(event, coord) {
         return _this.view.setPosition(coord);
       });

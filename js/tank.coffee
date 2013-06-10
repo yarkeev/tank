@@ -178,21 +178,35 @@
 
 	class NetworkInterface extends Observer
 
+		enableState: false
+
 		host: 'http://localhost'
 
 		port: 8888
 
 		constructor: ->
-			@socket = io.connect "#{@host}:#{@port}"
+			@connect()
 
-			@socket.on 'init', (data) ->
-				console.log data.sessionId
+		connect: ->
+			if @enableState
+				@socket = io.connect "#{@host}:#{@port}"
+
+				@socket.on 'init', (data) ->
+					console.log data.sessionId
+
+		enable: ->
+			@enableState = true
+
+		disable: ->
+			@enableState = false
 
 		on: (eventId, callback) ->
-			@socket.on eventId, callback
+			if @enableState
+				@socket.on eventId, callback
 
 		emit: (eventId, data) ->
-			@socket.emit eventId, data
+			if @enableState
+				@socket.emit eventId, data
 
 	###
 	# class of view
@@ -216,6 +230,12 @@
 		###
 		constructor: ->
 			super
+
+			###
+			# Unique id
+			# @var {string}
+			###
+			@id = Math.random().toString(36).substr(2, 16)
 
 			###
 			# Current directrion
@@ -840,8 +860,9 @@
 			$(document.body)
 				.on 'tank.enable', (event) =>
 					@model.enable()
-				.on 'tank.destroy', (event) =>
-					@destroy()
+				.on 'tank.destroy', (event, data) =>
+					if data.id && data.id == @model.id
+						@destroy()
 				.on 'tank.setPosition', (event, coord) =>
 					@view.setPosition coord
 
