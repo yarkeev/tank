@@ -612,6 +612,8 @@
 		###
 		init: ->
 			@$tank = $("<div class='#{CLASSES.tank.main}'></div>").appendTo @_$domContainer
+			@$tank.data
+				tankId: @model.id
 			@setPosition @$tank.position()
 			@_bindEvents()
 			@update()

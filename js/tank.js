@@ -761,6 +761,9 @@ var __hasProp = {}.hasOwnProperty,
 
     TankView.prototype.init = function() {
       this.$tank = $("<div class='" + CLASSES.tank.main + "'></div>").appendTo(this._$domContainer);
+      this.$tank.data({
+        tankId: this.model.id
+      });
       this.setPosition(this.$tank.position());
       this._bindEvents();
       return this.update();
