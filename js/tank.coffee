@@ -861,8 +861,11 @@
 				.on 'tank.enable', (event) =>
 					@model.enable()
 				.on 'tank.destroy', (event, data) =>
-					if data.id && data.id == @model.id
-						@destroy()
+					if data.id
+						if data.id == @model.id
+							@destroy()
+					else
+						@destroy
 				.on 'tank.setPosition', (event, coord) =>
 					@view.setPosition coord
 

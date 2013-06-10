@@ -1081,8 +1081,12 @@ var __hasProp = {}.hasOwnProperty,
       return $(document.body).on('tank.enable', function(event) {
         return _this.model.enable();
       }).on('tank.destroy', function(event, data) {
-        if (data.id && data.id === _this.model.id) {
-          return _this.destroy();
+        if (data.id) {
+          if (data.id === _this.model.id) {
+            return _this.destroy();
+          }
+        } else {
+          return _this.destroy;
         }
       }).on('tank.setPosition', function(event, coord) {
         return _this.view.setPosition(coord);
