@@ -543,10 +543,10 @@
 			setTimeout () =>
 				@$bullet.addClass 'hole'
 			, @_explodeTime
-			scrollTop = $(window).scrollTop()
-			el = document.elementFromPoint(@position.left, @position.top)
-			if el != @_$domContainer.get(0)
-				@findExplodeElement($(el)).fadeOut TIME_OF_DESTROY_ELEMENT
+			# scrollTop = $(window).scrollTop()
+			# el = document.elementFromPoint(@position.left, @position.top)
+			# if el != @_$domContainer.get(0)
+			# 	@findExplodeElement($(el)).fadeOut TIME_OF_DESTROY_ELEMENT
 
 	###
 	# View of tank
@@ -622,7 +622,6 @@
 		# tank destroy
 		###
 		destroy: ->
-			
 			@$tank.remove()
 			@_unbindEvents()
 			@clearShots()
@@ -863,7 +862,7 @@
 				.on 'tank.enable', (event) =>
 					@model.enable()
 				.on 'tank.destroy', (event, data) =>
-					if data.id
+					if data.id && data.id.length
 						if data.id == @model.id
 							@destroy()
 					else

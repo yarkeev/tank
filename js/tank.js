@@ -671,17 +671,11 @@ var __hasProp = {}.hasOwnProperty,
 
 
     BulletView.prototype.explode = function() {
-      var el, scrollTop,
-        _this = this;
+      var _this = this;
       this.$bullet.addClass('explode');
-      setTimeout(function() {
+      return setTimeout(function() {
         return _this.$bullet.addClass('hole');
       }, this._explodeTime);
-      scrollTop = $(window).scrollTop();
-      el = document.elementFromPoint(this.position.left, this.position.top);
-      if (el !== this._$domContainer.get(0)) {
-        return this.findExplodeElement($(el)).fadeOut(TIME_OF_DESTROY_ELEMENT);
-      }
     };
 
     return BulletView;
@@ -1084,7 +1078,7 @@ var __hasProp = {}.hasOwnProperty,
       return $(document.body).on('tank.enable', function(event) {
         return _this.model.enable();
       }).on('tank.destroy', function(event, data) {
-        if (data.id) {
+        if (data.id && data.id.length) {
           if (data.id === _this.model.id) {
             return _this.destroy();
           }
